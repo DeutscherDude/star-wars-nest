@@ -7,11 +7,22 @@ export class PlanetsController {
 
   @Get()
   findAll() {
-    return this.planetsService.findAll();
+    const data = this.planetsService.findAll();
+    return data;
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.planetsService.findOne(+id);
+  findOneById(@Param('id') id: string) {
+    return this.planetsService.findOneById(+id);
+  }
+
+  @Get('name/:name')
+  findOneByName(@Param('name') name: string) {
+    return this.planetsService.findOneByName(name);
+  }
+
+  @Get('climate/:climate')
+  findByClimate(@Param('climate') climate: string) {
+    return this.planetsService.findByClimate(climate);
   }
 }
