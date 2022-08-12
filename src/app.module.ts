@@ -16,7 +16,7 @@ import { PlanetsModule } from './planets/planets.module';
     CacheModule.registerAsync({
       useFactory: () => ({ ttl: 10, max: 20 }),
     }),
-    // EnvModule,
+    EnvModule,
   ],
   controllers: [AppController],
   providers: [],
