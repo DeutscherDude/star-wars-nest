@@ -9,27 +9,26 @@ export class PlanetsController {
 
   @Get()
   async findAll() {
-    const data = this.planetsService.findAll();
-    return data;
+    return await this.planetsService.findAll();
   }
 
   @Get(':id')
   async findOneById(@Param('id') id: string) {
-    return this.planetsService.findOneById(id);
+    return await this.planetsService.findOneById(id);
   }
 
   @Get('name/:name')
   async findOneByName(@Param('name') name: string) {
-    return this.planetsService.findOneByName(name);
+    return await this.planetsService.findOneByName(name);
   }
 
   @Get('climate/:climate')
   async findByClimate(@Param('climate') climate: string) {
-    return this.planetsService.findByClimate(climate);
+    return await this.planetsService.findByClimate(climate);
   }
 
   @Get('terrain/:terrain')
   async findByTerrain(@Param('terrain') terrain: string) {
-    return this.planetsService.findByTerrain(terrain);
+    return await this.planetsService.findByTerrain(terrain);
   }
 }

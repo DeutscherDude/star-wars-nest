@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { PlanetNotFoundException } from 'src/common/exceptions/customErrors';
 import { errorMessages } from 'src/common/exceptions/error-messages';
+import { EnvService } from 'src/env/env.service';
 import { Planet, PlanetFetchResult } from './entities/planet.entity';
 
 type obsPlanetArray = Observable<Planet[]>;
@@ -11,11 +12,14 @@ type obsPlanet = Observable<Planet>;
 
 @Injectable()
 export class PlanetsService {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly envService: EnvService,
+  ) {}
 
-  findAll(): Observable<PlanetFetchResult> {
+  async findAll(): Promise<Observable<PlanetFetchResult>> {
     return this.httpService
-      .get('https://swapi.dev/api/planets/', {
+      .get((await this.envService.get('SWAPI_URL')) as string, {
         headers: { Accept: 'application/json' },
       })
       .pipe(
@@ -38,7 +42,8 @@ export class PlanetsService {
   }
 
   async findOneByName(name: string): Promise<obsPlanet> {
-    return this.findAll().pipe(
+    const res = await this.findAll();
+    return res.pipe(
       map((res) => res.results.find((res) => res.name === name)),
       catchError((err) => {
         throw new PlanetNotFoundException();
@@ -47,7 +52,8 @@ export class PlanetsService {
   }
 
   async findByClimate(climate: string): Promise<obsPlanetArray> {
-    return this.findAll().pipe(
+    const res = await this.findAll();
+    return res.pipe(
       map((res) => res.results.filter((res) => res.climate === climate)),
       catchError((err) => {
         throw new PlanetNotFoundException();
@@ -56,7 +62,8 @@ export class PlanetsService {
   }
 
   async findByTerrain(terrain: string): Promise<obsPlanetArray> {
-    return this.findAll().pipe(
+    const res = await this.findAll();
+    return res.pipe(
       map((res) => res.results.filter((res) => res.terrain.includes(terrain))),
       catchError((err) => {
         throw new PlanetNotFoundException(
