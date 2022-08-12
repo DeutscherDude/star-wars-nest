@@ -1,6 +1,7 @@
 import { HttpModule } from '@nestjs/axios';
 import { CacheModule, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
+import { EnvModule } from './env/env.module';
 import { PlanetsModule } from './planets/planets.module';
 
 @Module({
@@ -15,6 +16,7 @@ import { PlanetsModule } from './planets/planets.module';
     CacheModule.registerAsync({
       useFactory: () => ({ ttl: 10, max: 20 }),
     }),
+    EnvModule,
   ],
   controllers: [AppController],
   providers: [],
