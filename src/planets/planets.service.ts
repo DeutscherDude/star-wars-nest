@@ -1,9 +1,13 @@
 import { HttpService } from '@nestjs/axios';
 import { HttpException, Injectable } from '@nestjs/common';
-import { from, Observable } from 'rxjs';
-import { catchError, filter, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { PlanetNotFoundException } from 'src/common/exceptions/customErrors';
-import { PlanetFetchResult } from './entities/planet.entity';
+import { errorMessages } from 'src/common/exceptions/error-messages';
+import { Planet, PlanetFetchResult } from './entities/planet.entity';
+
+type obsPlanetArray = Observable<Planet[]>;
+type obsPlanet = Observable<Planet>;
 
 @Injectable()
 export class PlanetsService {
@@ -22,7 +26,7 @@ export class PlanetsService {
       );
   }
 
-  async findOneById(id: number) {
+  async findOneById(id: string): Promise<obsPlanet> {
     return this.httpService.get(`https://swapi.dev/api/planets/${id}/`).pipe(
       map((response) => {
         return response.data;
@@ -33,15 +37,32 @@ export class PlanetsService {
     );
   }
 
-  async findOneByName(name: string) {
+  async findOneByName(name: string): Promise<obsPlanet> {
     return this.findAll().pipe(
       map((res) => res.results.find((res) => res.name === name)),
+      catchError((err) => {
+        throw new PlanetNotFoundException();
+      }),
     );
   }
 
-  async findByClimate(climate: string) {
+  async findByClimate(climate: string): Promise<obsPlanetArray> {
     return this.findAll().pipe(
-      map((res) => res.results)
+      map((res) => res.results.filter((res) => res.climate === climate)),
+      catchError((err) => {
+        throw new PlanetNotFoundException();
+      }),
+    );
+  }
+
+  async findByTerrain(terrain: string): Promise<obsPlanetArray> {
+    return this.findAll().pipe(
+      map((res) => res.results.filter((res) => res.terrain.includes(terrain))),
+      catchError((err) => {
+        throw new PlanetNotFoundException(
+          errorMessages.PLANET_TERRAIN_NOT_FOUND,
+        );
+      }),
     );
   }
 }

@@ -1,14 +1,19 @@
 import { HttpModule } from '@nestjs/axios';
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { PlanetsModule } from './planets/planets.module';
 
 @Module({
   imports: [
     PlanetsModule,
-    HttpModule.register({
-      timeout: 5000,
-      maxRedirects: 5,
+    HttpModule.registerAsync({
+      useFactory: () => ({
+        timeout: 5000,
+        maxRedirects: 5,
+      }),
+    }),
+    CacheModule.registerAsync({
+      useFactory: () => ({ ttl: 10, max: 20 }),
     }),
   ],
   controllers: [AppController],
