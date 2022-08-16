@@ -4,7 +4,7 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { PlanetNotFoundException } from '../common/exceptions/customErrors';
 import { errorMessages } from '../common/exceptions/error-messages';
-import { LinkedList } from '../common/utils/data-structures';
+import { LinkedList, ListNode } from '../common/utils/data-structures';
 import { SWAPI_URL } from '../env/constants.tokens';
 import { EnvService } from '../env/env.service';
 import { PaginationQueryDto } from './dtos/paginationQuery.dto';
@@ -21,7 +21,8 @@ export class PlanetsService {
   ) {}
 
   async findAll(paginationQuery?: PaginationQueryDto): Promise<obsPlanetArray> {
-    await this.fetchPages();
+    const res = await this.fetchPages();
+    res.map()
     return this.httpService
       .get((await this.envService.get(SWAPI_URL)) as string, {
         headers: { Accept: 'application/json' },
@@ -79,53 +80,35 @@ export class PlanetsService {
     );
   }
 
-  private async fetchPages() {
+  private async fetchPages(start = 1, end = 6) {
     let linkedList: LinkedList<Planet[]>;
+    const requests = this.generatePageRequests(start, end);
 
-    const pageOne = firstValueFrom(
-      this.httpService
-        .get((await this.envService.get(SWAPI_URL)) + '?page=1')
-        .pipe(map((data) => data.data.results)),
-    );
-    const pageTwo = firstValueFrom(
-      this.httpService
-        .get((await this.envService.get(SWAPI_URL)) + '?page=2')
-        .pipe(map((data) => data.data.results)),
-    );
-    const pageThree = firstValueFrom(
-      this.httpService
-        .get((await this.envService.get(SWAPI_URL)) + '?page=3')
-        .pipe(map((data) => data.data.results)),
-    );
-    const pageFour = firstValueFrom(
-      this.httpService
-        .get((await this.envService.get(SWAPI_URL)) + '?page=4')
-        .pipe(map((data) => data.data.results)),
-    );
-    const pageFive = firstValueFrom(
-      this.httpService
-        .get((await this.envService.get(SWAPI_URL)) + '?page=5')
-        .pipe(map((data) => data.data.results)),
-    );
-    const pageSix = firstValueFrom(
-      this.httpService
-        .get((await this.envService.get(SWAPI_URL)) + '?page=6')
-        .pipe(map((data) => data.data.results)),
-    );
-
-    Promise.all([
-      pageOne,
-      pageTwo,
-      pageThree,
-      pageFour,
-      pageFive,
-      pageSix,
-    ]).then((responses) => {
-      linkedList = new LinkedList(responses[0]);
-      for (let k = 1; k < responses.length; k++) {
-        linkedList.append(responses[k]);
-      }
-    });
+    linkedList = await Promise.all(await requests)
+      .then((responses) => {
+        linkedList = new LinkedList(new ListNode<Planet[]>(responses[0]));
+        for (let k = 1; k < responses.length; k++) {
+          linkedList.append(responses[k]);
+        }
+        return linkedList;
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
     return linkedList;
+  }
+
+  private async generatePageRequests(start = 1, end = 6) {
+    let requests: Promise<any>[] = [];
+    for (start; start <= end; start++) {
+      requests.push(
+        firstValueFrom(
+          this.httpService
+            .get((await this.envService.get(SWAPI_URL)) + `?page=${start}`)
+            .pipe(map((data) => data.data.results)),
+        ),
+      );
+    }
+    return requests;
   }
 }
