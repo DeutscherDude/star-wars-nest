@@ -2,9 +2,10 @@ import { HttpService } from '@nestjs/axios';
 import { HttpException, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { PlanetNotFoundException } from 'src/common/exceptions/customErrors';
-import { errorMessages } from 'src/common/exceptions/error-messages';
-import { EnvService } from 'src/env/env.service';
+import { PlanetNotFoundException } from '../common/exceptions/customErrors';
+import { errorMessages } from '../common/exceptions/error-messages';
+import { SWAPI_URL } from '../env/constants.tokens';
+import { EnvService } from '../env/env.service';
 import { Planet, PlanetFetchResult } from './entities/planet.entity';
 
 type obsPlanetArray = Observable<Planet[]>;
@@ -19,7 +20,7 @@ export class PlanetsService {
 
   async findAll(): Promise<Observable<PlanetFetchResult>> {
     return this.httpService
-      .get((await this.envService.get('SWAPI_URL')) as string, {
+      .get((await this.envService.get(SWAPI_URL)) as string, {
         headers: { Accept: 'application/json' },
       })
       .pipe(
@@ -31,14 +32,16 @@ export class PlanetsService {
   }
 
   async findOneById(id: string): Promise<obsPlanet> {
-    return this.httpService.get(`https://swapi.dev/api/planets/${id}/`).pipe(
-      map((response) => {
-        return response.data;
-      }),
-      catchError((err) => {
-        throw new PlanetNotFoundException();
-      }),
-    );
+    return this.httpService
+      .get(`${await this.envService.get(SWAPI_URL)}${id}/`)
+      .pipe(
+        map((response) => {
+          return response.data;
+        }),
+        catchError((err) => {
+          throw new PlanetNotFoundException();
+        }),
+      );
   }
 
   async findOneByName(name: string): Promise<obsPlanet> {
