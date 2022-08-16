@@ -1,16 +1,13 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { firstValueFrom, Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { PlanetNotFoundException } from '../common/exceptions/customErrors';
-import { errorMessages } from '../common/exceptions/error-messages';
-import { LinkedList, ListNode } from '../common/utils/data-structures';
 import { SWAPI_URL } from '../env/constants.tokens';
 import { EnvService } from '../env/env.service';
 import { PaginationQueryDto } from './dtos/paginationQuery.dto';
 import { Planet } from './entities/planet.entity';
 
-type obsPlanetArray = Observable<Planet[]>;
 type obsPlanet = Observable<Planet>;
 
 @Injectable()
