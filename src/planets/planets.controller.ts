@@ -1,5 +1,15 @@
-import { CacheInterceptor, CACHE_MANAGER, Controller, Get, Inject, Param, UseInterceptors } from '@nestjs/common';
+import {
+  CacheInterceptor,
+  CACHE_MANAGER,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 import { Cache } from 'cache-manager';
+import { PaginationQueryDto } from './dtos/paginationQuery.dto';
 import { PlanetsService } from './planets.service';
 
 @Controller('planets')
@@ -8,8 +18,8 @@ export class PlanetsController {
   constructor(private readonly planetsService: PlanetsService) {}
 
   @Get()
-  async findAll() {
-    return await this.planetsService.findAll();
+  async findAll(@Query() paginationQuery: PaginationQueryDto) {
+    return await this.planetsService.findAll(paginationQuery);
   }
 
   @Get(':id')
