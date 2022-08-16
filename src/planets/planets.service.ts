@@ -20,19 +20,8 @@ export class PlanetsService {
     private readonly envService: EnvService,
   ) {}
 
-  async findAll(paginationQuery?: PaginationQueryDto): Promise<obsPlanetArray> {
-    const res = await this.fetchPages();
-    res.map()
-    return this.httpService
-      .get((await this.envService.get(SWAPI_URL)) as string, {
-        headers: { Accept: 'application/json' },
-      })
-      .pipe(
-        map((response) => response.data),
-        catchError((err) => {
-          throw new NotFoundException(err.message);
-        }),
-      );
+  async findAll(paginationQuery?: PaginationQueryDto): Promise<Planet[]> {
+    return await this.fetchPages();
   }
 
   async findOneById(id: string): Promise<obsPlanet> {
@@ -48,54 +37,35 @@ export class PlanetsService {
       );
   }
 
-  async findOneByName(name: string): Promise<obsPlanet> {
-    const res = await this.findAll();
-    return res.pipe(
-      map((res) => res.find((res) => res.name === name)),
-      catchError((err) => {
-        throw new PlanetNotFoundException(err.message);
-      }),
-    );
+  async findOneByName(name: string): Promise<Planet> {
+    const fetch = await this.findAll();
+    return fetch.find((val) => val.name === name);
   }
 
-  async findByClimate(climate: string): Promise<obsPlanetArray> {
+  async findByClimate(climate: string): Promise<Planet[]> {
     const res = await this.findAll();
-    return res.pipe(
-      map((res) => res.filter((res) => res.climate === climate)),
-      catchError((err) => {
-        throw new PlanetNotFoundException(err.message);
-      }),
-    );
+    return res.filter((res) => res.climate === climate);
   }
 
-  async findByTerrain(terrain: string): Promise<obsPlanetArray> {
+  async findByTerrain(terrain: string): Promise<Planet[]> {
     const res = await this.findAll();
-    return res.pipe(
-      map((res) => res.filter((res) => res.terrain.includes(terrain))),
-      catchError((err) => {
-        throw new PlanetNotFoundException(
-          errorMessages.PLANET_TERRAIN_NOT_FOUND,
-        );
-      }),
-    );
+    return res.filter((val) => val.terrain === terrain);
   }
 
-  private async fetchPages(start = 1, end = 6) {
-    let linkedList: LinkedList<Planet[]>;
+  private async fetchPages(start = 1, end = 6): Promise<Planet[]> {
     const requests = this.generatePageRequests(start, end);
 
-    linkedList = await Promise.all(await requests)
-      .then((responses) => {
-        linkedList = new LinkedList(new ListNode<Planet[]>(responses[0]));
-        for (let k = 1; k < responses.length; k++) {
-          linkedList.append(responses[k]);
+    return await Promise.all(await requests)
+      .then((responses: [Planet[]]) => {
+        let resArray = [];
+        for (let k = 0; k < responses.length; k++) {
+          resArray = resArray.concat(responses[k]);
         }
-        return linkedList;
+        return resArray;
       })
       .catch((err) => {
         throw new Error(err);
       });
-    return linkedList;
   }
 
   private async generatePageRequests(start = 1, end = 6) {
