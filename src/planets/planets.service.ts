@@ -1,9 +1,10 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { PlanetNotFoundException } from '../common/exceptions/customErrors';
 import { errorMessages } from '../common/exceptions/error-messages';
+import { LinkedList } from '../common/utils/data-structures';
 import { SWAPI_URL } from '../env/constants.tokens';
 import { EnvService } from '../env/env.service';
 import { PaginationQueryDto } from './dtos/paginationQuery.dto';
@@ -19,18 +20,14 @@ export class PlanetsService {
     private readonly envService: EnvService,
   ) {}
 
-  async findAll(
-    paginationQuery?: PaginationQueryDto,
-  ): Promise<Observable<Planet[]>> {
+  async findAll(paginationQuery?: PaginationQueryDto): Promise<obsPlanetArray> {
+    await this.fetchPages();
     return this.httpService
       .get((await this.envService.get(SWAPI_URL)) as string, {
         headers: { Accept: 'application/json' },
       })
       .pipe(
-        map((response) => {
-          return response.data;
-        }),
-        map((data) => data.results.slice(0, 10)),
+        map((response) => response.data),
         catchError((err) => {
           throw new NotFoundException(err.message);
         }),
@@ -80,5 +77,55 @@ export class PlanetsService {
         );
       }),
     );
+  }
+
+  private async fetchPages() {
+    let linkedList: LinkedList<Planet[]>;
+
+    const pageOne = firstValueFrom(
+      this.httpService
+        .get((await this.envService.get(SWAPI_URL)) + '?page=1')
+        .pipe(map((data) => data.data.results)),
+    );
+    const pageTwo = firstValueFrom(
+      this.httpService
+        .get((await this.envService.get(SWAPI_URL)) + '?page=2')
+        .pipe(map((data) => data.data.results)),
+    );
+    const pageThree = firstValueFrom(
+      this.httpService
+        .get((await this.envService.get(SWAPI_URL)) + '?page=3')
+        .pipe(map((data) => data.data.results)),
+    );
+    const pageFour = firstValueFrom(
+      this.httpService
+        .get((await this.envService.get(SWAPI_URL)) + '?page=4')
+        .pipe(map((data) => data.data.results)),
+    );
+    const pageFive = firstValueFrom(
+      this.httpService
+        .get((await this.envService.get(SWAPI_URL)) + '?page=5')
+        .pipe(map((data) => data.data.results)),
+    );
+    const pageSix = firstValueFrom(
+      this.httpService
+        .get((await this.envService.get(SWAPI_URL)) + '?page=6')
+        .pipe(map((data) => data.data.results)),
+    );
+
+    Promise.all([
+      pageOne,
+      pageTwo,
+      pageThree,
+      pageFour,
+      pageFive,
+      pageSix,
+    ]).then((responses) => {
+      linkedList = new LinkedList(responses[0]);
+      for (let k = 1; k < responses.length; k++) {
+        linkedList.append(responses[k]);
+      }
+    });
+    return linkedList;
   }
 }

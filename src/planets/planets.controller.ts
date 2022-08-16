@@ -3,10 +3,11 @@ import {
   CACHE_MANAGER,
   Controller,
   Get,
-  Inject,
   Param,
   Query,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { PaginationQueryDto } from './dtos/paginationQuery.dto';
@@ -18,6 +19,7 @@ export class PlanetsController {
   constructor(private readonly planetsService: PlanetsService) {}
 
   @Get()
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async findAll(@Query() paginationQuery: PaginationQueryDto) {
     return await this.planetsService.findAll(paginationQuery);
   }
