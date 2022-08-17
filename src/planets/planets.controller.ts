@@ -10,7 +10,9 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Cache } from 'cache-manager';
+import { Observable } from 'rxjs';
 import { PaginationQueryDto } from './dtos/paginationQuery.dto';
+import { Planet } from './entities/planet.entity';
 import { PlanetsService } from './planets.service';
 
 @Controller('planets')
@@ -20,27 +22,29 @@ export class PlanetsController {
 
   @Get()
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
-  async findAll(@Query() paginationQuery: PaginationQueryDto) {
+  async findAll(
+    @Query() paginationQuery: PaginationQueryDto,
+  ): Promise<Planet[]> {
     return await this.planetsService.findAll(paginationQuery);
   }
 
   @Get(':id')
-  async findOneById(@Param('id') id: string) {
+  async findOneById(@Param('id') id: string): Promise<Observable<Planet>> {
     return await this.planetsService.findOneById(id);
   }
 
   @Get('name/:name')
-  async findOneByName(@Param('name') name: string) {
+  async findOneByName(@Param('name') name: string): Promise<Planet> {
     return await this.planetsService.findOneByName(name);
   }
 
   @Get('climate/:climate')
-  async findByClimate(@Param('climate') climate: string) {
+  async findByClimate(@Param('climate') climate: string): Promise<Planet[]> {
     return await this.planetsService.findByClimate(climate);
   }
 
   @Get('terrain/:terrain')
-  async findByTerrain(@Param('terrain') terrain: string) {
+  async findByTerrain(@Param('terrain') terrain: string): Promise<Planet[]> {
     return await this.planetsService.findByTerrain(terrain);
   }
 }

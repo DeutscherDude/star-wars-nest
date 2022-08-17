@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { firstValueFrom, Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { PlanetNotFoundException } from '../common/exceptions/customErrors';
@@ -9,6 +9,7 @@ import { PaginationQueryDto } from './dtos/paginationQuery.dto';
 import { Planet } from './entities/planet.entity';
 
 type obsPlanet = Observable<Planet>;
+type planetArrPromise = Promise<Planet[]>;
 
 @Injectable()
 export class PlanetsService {
@@ -36,7 +37,9 @@ export class PlanetsService {
 
   async findOneByName(name: string): Promise<Planet> {
     const fetch = await this.findAll();
-    return fetch.find((val) => val.name === name);
+    const planet = fetch.find((val) => val.name === name);
+    if (!planet) throw new NotFoundException();
+    return planet;
   }
 
   async findByClimate(climate: string): Promise<Planet[]> {
@@ -53,8 +56,8 @@ export class PlanetsService {
     const requests = this.generatePageRequests(start, end);
 
     return await Promise.all(await requests)
-      .then((responses: [Planet[]]) => {
-        let resArray = [];
+      .then((responses: Planet[][]) => {
+        let resArray: Planet[] = [];
         for (let k = 0; k < responses.length; k++) {
           resArray = resArray.concat(responses[k]);
         }
@@ -65,11 +68,14 @@ export class PlanetsService {
       });
   }
 
-  private async generatePageRequests(start = 1, end = 6) {
-    let requests: Promise<any>[] = [];
+  private async generatePageRequests(
+    start = 1,
+    end = 6,
+  ): Promise<planetArrPromise[]> {
+    let requests: planetArrPromise[] = [];
     for (start; start <= end; start++) {
       requests.push(
-        firstValueFrom(
+        firstValueFrom<Planet[]>(
           this.httpService
             .get((await this.envService.get(SWAPI_URL)) + `?page=${start}`)
             .pipe(map((data) => data.data.results)),

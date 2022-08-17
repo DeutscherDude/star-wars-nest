@@ -11,3 +11,9 @@ export class PlanetNotFoundException extends HttpException {
     );
   }
 }
+
+export class MissingEnvVars extends Error {
+  constructor() {
+    super();
+  }
+}
