@@ -17,8 +17,9 @@ export class EnvService {
   async get(key: string): Promise<string | number> {
     if (
       Object.keys(this.env as object).find((key) => key === key) === undefined
-    )
+    ) {
       throw new Error();
+    }
     return this.env[key];
   }
 }

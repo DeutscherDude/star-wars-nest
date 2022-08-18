@@ -2,10 +2,10 @@
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "tsconfig.json",
-    "tsconfigRootDir" : "./", 
+    "tsconfigRootDir": "./",
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint/eslint-plugin"],
+  "plugins": ["@typescript-eslint/eslint-plugin", "no-loops"],
   "extends": [
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended"
@@ -17,6 +17,8 @@
   },
   "ignorePatterns": [".eslintrc.json"],
   "rules": {
+    "no-console": 1,
+    "no-loops/no-loops": 2,
     "@typescript-eslint/interface-name-prefix": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",

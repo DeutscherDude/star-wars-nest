@@ -2,7 +2,6 @@ import { HttpService } from '@nestjs/axios';
 import { CACHE_MANAGER } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import Axios from 'axios';
-import { map, of } from 'rxjs';
 import { EnvService } from '../../src/env/env.service';
 import { PlanetsService } from '../../src/planets/planets.service';
 
@@ -38,8 +37,8 @@ describe('PlanetsService', () => {
   describe('findAll', () => {
     describe('given no server error', () => {
       it('should return all planets', async () => {
+        jest.spyOn(httpService, 'get').mockReturnValueOnce()
         const whatever = await service.findAll();
-        console.log(whatever.pipe(map((res) => res)));
       });
     });
   });

@@ -103,8 +103,8 @@ export class LinkedList<T> {
   }
 
   map(value?: any) {
-    let res = [];
-    let val = this.head;
+    const res = [];
+    const val = this.head;
     for (let i = 1; i < this.length - 1; i++) {
       res.push(val);
       // val = val.nextNode;
@@ -113,7 +113,7 @@ export class LinkedList<T> {
 
   printList() {
     let currentNode = this.head;
-    let list = [];
+    const list = [];
     while (currentNode !== null) {
       list.push(currentNode.value);
       currentNode = currentNode.nextNode!;

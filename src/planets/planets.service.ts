@@ -57,10 +57,10 @@ export class PlanetsService {
 
     return await Promise.all(await requests)
       .then((responses: Planet[][]) => {
-        let resArray: Planet[] = [];
-        for (let k = 0; k < responses.length; k++) {
-          resArray = resArray.concat(responses[k]);
-        }
+        const resArray: Planet[] = [];
+        responses.forEach((val) => {
+          resArray.concat(val);
+        });
         return resArray;
       })
       .catch((err) => {
@@ -72,7 +72,8 @@ export class PlanetsService {
     start = 1,
     end = 6,
   ): Promise<planetArrPromise[]> {
-    let requests: planetArrPromise[] = [];
+    const requests: planetArrPromise[] = [];
+    // eslint-disable-next-line no-loops/no-loops
     for (start; start <= end; start++) {
       requests.push(
         firstValueFrom<Planet[]>(
