@@ -1,15 +1,12 @@
 import {
   CacheInterceptor,
-  CACHE_MANAGER,
   Controller,
   Get,
   Param,
-  Query,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { Cache } from 'cache-manager';
 import { Observable } from 'rxjs';
 import { Planet } from './entities/planet.entity';
 import { PlanetsService } from './planets.service';

@@ -75,7 +75,6 @@ export class PlanetsService {
     end = 6,
   ): Promise<planetArrPromise[]> {
     const requests: planetArrPromise[] = [];
-    // eslint-disable-next-line no-loops/no-loops
     for (start; start <= end; start++) {
       requests.push(
         firstValueFrom<Planet[]>(

@@ -102,22 +102,13 @@ export class LinkedList<T> {
     return !Number.isInteger(index) || index < 0 || index > this.length + 1;
   }
 
-  map(value?: any) {
+  // WIP
+  map() {
     const res = [];
     const val = this.head;
     for (let i = 1; i < this.length - 1; i++) {
       res.push(val);
       // val = val.nextNode;
     }
-  }
-
-  printList() {
-    let currentNode = this.head;
-    const list = [];
-    while (currentNode !== null) {
-      list.push(currentNode.value);
-      currentNode = currentNode.nextNode!;
-    }
-    console.log(list.join(' --> '));
   }
 }
