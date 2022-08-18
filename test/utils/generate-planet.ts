@@ -26,6 +26,7 @@ export const generatePlanet = (): Planet => {
  */
 export const generateMultiplePlanets = (amount = 10): Planet[] => {
   const planets: Planet[] = [];
+  // eslint-disable-next-line no-loops/no-loops
   for (amount; amount > 0; amount - 1) {
     planets.push(generatePlanet());
   }

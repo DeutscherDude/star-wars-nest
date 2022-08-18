@@ -57,9 +57,9 @@ export class PlanetsService {
 
     return await Promise.all(await requests)
       .then((responses: Planet[][]) => {
-        const resArray: Planet[] = [];
+        let resArray: Planet[] = [];
         responses.forEach((val) => {
-          resArray.concat(val);
+          resArray = resArray.concat(val);
         });
         return resArray;
       })
