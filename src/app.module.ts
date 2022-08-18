@@ -14,7 +14,7 @@ import { PlanetsModule } from './planets/planets.module';
       }),
     }),
     CacheModule.registerAsync({
-      useFactory: () => ({ ttl: 10, max: 20 }),
+      useFactory: () => ({ ttl: 15, max: 20 }),
     }),
     EnvModule,
   ],

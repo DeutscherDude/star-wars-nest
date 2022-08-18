@@ -7,7 +7,6 @@ import {
   AxiosTimeoutException,
   PlanetNotFoundException,
 } from '../common/exceptions/customErrors';
-import { SWAPI_URL } from '../env/constants.tokens';
 import { EnvService } from '../env/env.service';
 import { requestConfig } from './config/axiosRequestConfig';
 import { Planet } from './entities/planet.entity';
@@ -23,22 +22,18 @@ export class PlanetsService {
   ) {}
 
   async findAll(): Promise<Planet[]> {
-    return await this.fetchPages(
-      (await this.envService.get(SWAPI_URL)) as string,
-    );
+    return await this.fetchPages(this.envService.swapiURL);
   }
 
   async findOneById(id: string): Promise<obsPlanet> {
-    return this.httpService
-      .get(`${await this.envService.get(SWAPI_URL)}${id}/`)
-      .pipe(
-        map((response) => {
-          return response.data;
-        }),
-        catchError((err) => {
-          throw new PlanetNotFoundException(err.message);
-        }),
-      );
+    return this.httpService.get(`${this.envService.swapiURL}${id}/`).pipe(
+      map((response) => {
+        return response.data;
+      }),
+      catchError((err) => {
+        throw new PlanetNotFoundException(err.message);
+      }),
+    );
   }
 
   async findOneByName(name: string): Promise<Planet> {

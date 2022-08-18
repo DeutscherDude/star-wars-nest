@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   Param,
+  Query,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
