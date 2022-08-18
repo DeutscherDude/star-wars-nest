@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
+import Joi from 'joi';
 import { errorMessages } from './error-messages';
 
 export class PlanetNotFoundException extends HttpException {
@@ -12,9 +13,10 @@ export class PlanetNotFoundException extends HttpException {
   }
 }
 
-export class MissingEnvVars extends Error {
-  constructor() {
-    super();
+export class EnvValidationError extends Error {
+  constructor(errors: Joi.ValidationError) {
+    super(`${errorMessages.ENV_VALIDATION} ${errors}
+    `);
   }
 }
 

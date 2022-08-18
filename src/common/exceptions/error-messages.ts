@@ -4,4 +4,5 @@ export enum errorMessages {
   PLANET_TERRAIN_NOT_FOUND = 'Sorry, but planet with this terrain does not exist',
   AXIOS_ERROR = 'Failed to fetch data',
   AXIOS_TIMEOUT = 'AXIOS TIMEOUT',
+  ENV_VALIDATION = 'The following env variable(s) failed validation:',
 }
