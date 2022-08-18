@@ -4,14 +4,12 @@ import {
   Controller,
   Get,
   Param,
-  Query,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { Observable } from 'rxjs';
-import { PaginationQueryDto } from './dtos/paginationQuery.dto';
 import { Planet } from './entities/planet.entity';
 import { PlanetsService } from './planets.service';
 
@@ -22,10 +20,8 @@ export class PlanetsController {
 
   @Get()
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
-  async findAll(
-    @Query() paginationQuery: PaginationQueryDto,
-  ): Promise<Planet[]> {
-    return await this.planetsService.findAll(paginationQuery);
+  async findAll(): Promise<Planet[]> {
+    return await this.planetsService.findAll();
   }
 
   @Get(':id')

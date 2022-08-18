@@ -17,3 +17,27 @@ export class MissingEnvVars extends Error {
     super();
   }
 }
+
+export class AxiosException extends HttpException {
+  constructor(reason?: string) {
+    super(
+      {
+        message: errorMessages.AXIOS_ERROR,
+        reason: reason ? reason : '',
+      },
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+}
+
+export class AxiosTimeoutException extends HttpException {
+  constructor(reason?: string) {
+    super(
+      {
+        message: errorMessages.AXIOS_TIMEOUT,
+        reason: reason ? reason : '',
+      },
+      HttpStatus.GATEWAY_TIMEOUT,
+    );
+  }
+}

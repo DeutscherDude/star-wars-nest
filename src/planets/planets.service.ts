@@ -2,10 +2,14 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { firstValueFrom, Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { PlanetNotFoundException } from '../common/exceptions/customErrors';
+import {
+  AxiosException,
+  AxiosTimeoutException,
+  PlanetNotFoundException,
+} from '../common/exceptions/customErrors';
 import { SWAPI_URL } from '../env/constants.tokens';
 import { EnvService } from '../env/env.service';
-import { PaginationQueryDto } from './dtos/paginationQuery.dto';
+import { requestConfig } from './config/axiosRequestConfig';
 import { Planet } from './entities/planet.entity';
 
 type obsPlanet = Observable<Planet>;
@@ -18,8 +22,10 @@ export class PlanetsService {
     private readonly envService: EnvService,
   ) {}
 
-  async findAll(paginationQuery?: PaginationQueryDto): Promise<Planet[]> {
-    return await this.fetchPages();
+  async findAll(): Promise<Planet[]> {
+    return await this.fetchPages(
+      (await this.envService.get(SWAPI_URL)) as string,
+    );
   }
 
   async findOneById(id: string): Promise<obsPlanet> {
@@ -52,8 +58,8 @@ export class PlanetsService {
     return res.filter((val) => val.terrain === terrain);
   }
 
-  private async fetchPages(start = 1, end = 6): Promise<Planet[]> {
-    const requests = this.generatePageRequests(start, end);
+  private async fetchPages(url: string, start = 1, end = 6): Promise<Planet[]> {
+    const requests = this.generatePageRequests(url, start, end);
 
     return await Promise.all(await requests)
       .then((responses: Planet[][]) => {
@@ -64,11 +70,12 @@ export class PlanetsService {
         return resArray;
       })
       .catch((err) => {
-        throw new Error(err);
+        throw new AxiosException(err.message);
       });
   }
 
   private async generatePageRequests(
+    url: string,
     start = 1,
     end = 6,
   ): Promise<planetArrPromise[]> {
@@ -77,9 +84,12 @@ export class PlanetsService {
     for (start; start <= end; start++) {
       requests.push(
         firstValueFrom<Planet[]>(
-          this.httpService
-            .get((await this.envService.get(SWAPI_URL)) + `?page=${start}`)
-            .pipe(map((data) => data.data.results)),
+          this.httpService.get(url + `?page=${start}`, requestConfig).pipe(
+            map((data) => data.data.results),
+            catchError((err) => {
+              throw new AxiosTimeoutException(err.message);
+            }),
+          ),
         ),
       );
     }
