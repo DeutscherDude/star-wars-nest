@@ -8,7 +8,9 @@ import {
   PlanetNotFoundException,
 } from '../common/exceptions/customErrors';
 import { EnvService } from '../env/env.service';
+import { SwapiService } from '../swapi/swapi.service';
 import { requestConfig } from './config/axiosRequestConfig';
+import { IQueryOptions } from './dtos/queryOptions.dto';
 import { Planet } from './entities/planet.entity';
 
 type obsPlanet = Observable<Planet>;
@@ -19,9 +21,10 @@ export class PlanetsService {
   constructor(
     private readonly httpService: HttpService,
     private readonly envService: EnvService,
+    private readonly swapiService: SwapiService,
   ) {}
 
-  async findAll(): Promise<Planet[]> {
+  async findMany(query?: IQueryOptions): Promise<Planet[]> {
     return await this.fetchPages(this.envService.swapiURL);
   }
 
@@ -37,19 +40,19 @@ export class PlanetsService {
   }
 
   async findOneByName(name: string): Promise<Planet> {
-    const fetch = await this.findAll();
+    const fetch = await this.findMany();
     const planet = fetch.find((val) => val.name === name);
     if (!planet) throw new NotFoundException();
     return planet;
   }
 
   async findByClimate(climate: string): Promise<Planet[]> {
-    const res = await this.findAll();
+    const res = await this.findMany();
     return res.filter((res) => res.climate === climate);
   }
 
   async findByTerrain(terrain: string): Promise<Planet[]> {
-    const res = await this.findAll();
+    const res = await this.findMany();
     return res.filter((val) => val.terrain === terrain);
   }
 

@@ -7,7 +7,7 @@ import {
 } from '../common/exceptions/customErrors';
 import { EnvService } from '../env/env.service';
 import { requestConfig } from '../planets/config/axiosRequestConfig';
-import { QueryOptionsDto } from '../planets/dtos/queryOptions.dto';
+import { IQueryOptions } from '../planets/dtos/queryOptions.dto';
 import { Planet } from '../planets/entities/planet.entity';
 
 type planetArrPromise = Promise<Planet[]>;
@@ -39,8 +39,9 @@ export class SwapiService {
       });
   }
 
-  async findManyByParams(params: QueryOptionsDto) {
-    return params;
+  async findManyByParams(queryOptions: IQueryOptions) {
+    console.log(queryOptions);
+    return queryOptions;
   }
 
   private async generatePageRequests(

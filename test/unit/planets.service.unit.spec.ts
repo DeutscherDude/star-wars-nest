@@ -73,7 +73,7 @@ describe('PlanetsService', () => {
     describe('given no server error', () => {
       it('should return all planets', async () => {
         jest.spyOn(httpService, 'get').mockReturnValue(dummyObservable as any);
-        const res = await service.findAll();
+        const res = await service.findMany();
         expect(res).toBeDefined();
         expect(res).toBeInstanceOf(Array);
       });
@@ -83,7 +83,7 @@ describe('PlanetsService', () => {
       it('should throw an error', async () => {
         jest.spyOn(httpService, 'get').mockReturnValueOnce(undefined as any);
         try {
-          await service.findAll();
+          await service.findMany();
         } catch (err) {
           expect(err).toBeDefined();
           expect(err).toBeInstanceOf(AxiosException);
@@ -98,7 +98,7 @@ describe('PlanetsService', () => {
           .mockReturnValueOnce(malformedObservable as any);
 
         try {
-          await service.findAll();
+          await service.findMany();
         } catch (err) {
           expect(err).toBeDefined();
           expect(err).toBeInstanceOf(AxiosException);

@@ -4,6 +4,7 @@ import { PlanetsController } from './planets.controller';
 import { HttpModule } from '@nestjs/axios';
 import { EnvModule } from 'src/env/env.module';
 import { EnvService } from 'src/env/env.service';
+import { SwapiService } from '../swapi/swapi.service';
 
 @Module({
   imports: [HttpModule, EnvModule],
@@ -15,6 +16,7 @@ import { EnvService } from 'src/env/env.service';
       useClass: CacheModule,
     },
     EnvService,
+    SwapiService,
   ],
 })
 export class PlanetsModule {}
