@@ -3,6 +3,7 @@ import { CacheModule, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { EnvModule } from './env/env.module';
 import { PlanetsModule } from './planets/planets.module';
+import { SwapiModule } from './swapi/swapi.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { PlanetsModule } from './planets/planets.module';
       useFactory: () => ({ ttl: 15, max: 20 }),
     }),
     EnvModule,
+    SwapiModule,
   ],
   controllers: [AppController],
   providers: [],

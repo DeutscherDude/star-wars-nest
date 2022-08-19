@@ -7,7 +7,7 @@
 
 # Tsc build
 *.tsbuildinfo
-
+tsconfig.build.tsbuildinfo
 
 # Logs
 logs
