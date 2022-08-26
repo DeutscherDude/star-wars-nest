@@ -2,14 +2,9 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import Joi from 'joi';
 import { errorMessages } from './error-messages';
 
-export class PlanetNotFoundException extends HttpException {
+export class PlanetNotFoundException extends Error {
   constructor(message?: string) {
-    super(
-      {
-        message: message ? message : `${errorMessages.PLANET_ID_NOT_FOUND}`,
-      },
-      HttpStatus.NOT_FOUND,
-    );
+    super(message);
   }
 }
 
@@ -20,15 +15,10 @@ export class EnvValidationError extends Error {
   }
 }
 
-export class AxiosException extends HttpException {
+export class AxiosException extends Error {
   constructor(reason?: string) {
-    super(
-      {
-        message: errorMessages.AXIOS_ERROR,
-        reason: reason ? reason : '',
-      },
-      HttpStatus.BAD_REQUEST,
-    );
+    const message = reason ? reason : '';
+    super(message);
   }
 }
 

@@ -2,13 +2,16 @@ import {
   CacheInterceptor,
   Controller,
   Get,
+  NotFoundException,
   Param,
   Query,
   UseInterceptors,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import {
+  AxiosException,
+  PlanetNotFoundException,
+} from '../common/exceptions/customErrors';
 import { generateQueryOptions } from '../common/utils/generateQueryOptions';
 import { QueryOptionsDto } from './dtos/queryOptions.dto';
 import { Planet } from './entities/planet.entity';
@@ -20,22 +23,29 @@ export class PlanetsController {
   constructor(private readonly planetsService: PlanetsService) {}
 
   @Get()
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async findMany(@Query() queryOptionsDto: QueryOptionsDto): Promise<Planet[]> {
     const query = generateQueryOptions(queryOptionsDto);
-    return this.planetsService.findMany(query);
+    try {
+      return this.planetsService.findMany(query);
+    } catch (err) {
+      if (err instanceof AxiosException) {
+        throw new NotFoundException(err.message);
+      } else {
+        throw err;
+      }
+    }
   }
 
   @Get(':id')
   async findOneById(@Param('id') id: string): Promise<Observable<Planet>> {
-    return this.planetsService.findOneById(id);
-  }
-
-  @Get('many')
-  async findManyByQuery(
-    @Query('queryOptions') queryOptionsDto: QueryOptionsDto,
-  ) {
-    const query = generateQueryOptions(queryOptionsDto);
-    return this.planetsService.findMany(query);
+    try {
+      return this.planetsService.findOneById(id);
+    } catch (err) {
+      if (err instanceof PlanetNotFoundException) {
+        throw new NotFoundException(err.message);
+      } else {
+        throw err;
+      }
+    }
   }
 }

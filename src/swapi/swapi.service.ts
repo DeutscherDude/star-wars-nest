@@ -1,16 +1,31 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { catchError, firstValueFrom, map } from 'rxjs';
+import { catchError, firstValueFrom, map, Observable } from 'rxjs';
 import {
   AxiosException,
   AxiosTimeoutException,
+  PlanetNotFoundException,
 } from '../common/exceptions/customErrors';
 import { EnvService } from '../env/env.service';
 import { requestConfig } from '../planets/config/axiosRequestConfig';
 import { IQueryOptions } from '../planets/dtos/queryOptions.dto';
 import { Planet } from '../planets/entities/planet.entity';
+import {
+  climateFilter,
+  createdFilter,
+  diameterFilter,
+  editedFilter,
+  filmsFilter,
+  gravityFilter,
+  populationFilter,
+  residentsFilter,
+  surfaceWaterFilter,
+  terrainFilter,
+  urlFilter,
+} from './swapi.query.filters';
 
 type planetArrPromise = Promise<Planet[]>;
+type obsPlanet = Observable<Planet>;
 
 @Injectable()
 export class SwapiService {
@@ -19,7 +34,7 @@ export class SwapiService {
     private readonly envService: EnvService,
   ) {}
 
-  async fetchPages(start = 1, end = 6): Promise<Planet[]> {
+  private async fetchPages(start = 1, end = 6): Promise<Planet[]> {
     const requests = this.generatePageRequests(
       this.envService.swapiURL,
       start,
@@ -39,9 +54,37 @@ export class SwapiService {
       });
   }
 
-  async findManyByParams(queryOptions: IQueryOptions) {
-    console.log(queryOptions);
-    return queryOptions;
+  async findOneById(id: string): Promise<obsPlanet> {
+    return this.httpService.get(`${this.envService.swapiURL}${id}/`).pipe(
+      map((response) => {
+        return response.data;
+      }),
+      catchError((err) => {
+        throw new PlanetNotFoundException(err.message);
+      }),
+    );
+  }
+
+  async findAll(): Promise<Planet[]> {
+    return await this.fetchPages();
+  }
+
+  async findManyByParams(queryOptions?: IQueryOptions): Promise<Planet[]> {
+    let planets = await this.fetchPages();
+
+    planets = climateFilter(planets, queryOptions);
+    planets = createdFilter(planets, queryOptions);
+    planets = diameterFilter(planets, queryOptions);
+    planets = editedFilter(planets, queryOptions);
+    planets = filmsFilter(planets, queryOptions);
+    planets = gravityFilter(planets, queryOptions);
+    planets = populationFilter(planets, queryOptions);
+    planets = residentsFilter(planets, queryOptions);
+    planets = surfaceWaterFilter(planets, queryOptions);
+    planets = terrainFilter(planets, queryOptions);
+    planets = urlFilter(planets, queryOptions);
+
+    return planets;
   }
 
   private async generatePageRequests(
@@ -50,6 +93,7 @@ export class SwapiService {
     end = 6,
   ): Promise<planetArrPromise[]> {
     const requests: planetArrPromise[] = [];
+
     for (start; start <= end; start++) {
       requests.push(
         firstValueFrom<Planet[]>(
