@@ -8,8 +8,8 @@ export class Planet {
   terrain: string;
   surface_water: string;
   population: string;
-  residents: Array<any>;
-  films: Array<any>;
+  residents: Array<string>;
+  films: Array<string>;
   created: string;
   edited: string;
   url: string;
@@ -18,6 +18,6 @@ export class Planet {
 export class PlanetFetchResult {
   count: number;
   next: string;
-  previous: null;
+  previous: null | string;
   results: Planet[];
 }

@@ -1,7 +1,13 @@
 import { HttpModule } from '@nestjs/axios';
-import { CacheModule, Module } from '@nestjs/common';
+import { CacheModule, Logger, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
+import { EnvModule } from './env/env.module';
 import { PlanetsModule } from './planets/planets.module';
+import { SwapiModule } from './swapi/swapi.module';
+import { HttpExceptionFilter } from './common/exception-filter/http.exception.filter';
+import { APP_FILTER } from '@nestjs/core';
+import { ErrorHandlingModule } from './error-handling/error-handling.module';
+import { ErrorHandlingService } from './error-handling/error-handling.service';
 
 @Module({
   imports: [
@@ -13,10 +19,20 @@ import { PlanetsModule } from './planets/planets.module';
       }),
     }),
     CacheModule.registerAsync({
-      useFactory: () => ({ ttl: 10, max: 20 }),
+      useFactory: () => ({ ttl: 15, max: 20 }),
     }),
+    EnvModule,
+    SwapiModule,
+    ErrorHandlingModule,
   ],
   controllers: [AppController],
-  providers: [],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+    ErrorHandlingService,
+    Logger,
+  ],
 })
 export class AppModule {}
