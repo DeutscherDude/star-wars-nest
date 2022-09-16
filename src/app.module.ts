@@ -19,7 +19,7 @@ import { ErrorHandlingService } from './error-handling/error-handling.service';
       }),
     }),
     CacheModule.registerAsync({
-      useFactory: () => ({ ttl: 15, max: 20 }),
+      useFactory: () => ({ ttl: 36000, max: 20 }),
     }),
     EnvModule,
     SwapiModule,
