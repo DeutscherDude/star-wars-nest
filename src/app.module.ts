@@ -8,6 +8,7 @@ import { HttpExceptionFilter } from './common/exception-filter/http.exception.fi
 import { APP_FILTER } from '@nestjs/core';
 import { ErrorHandlingModule } from './error-handling/error-handling.module';
 import { ErrorHandlingService } from './error-handling/error-handling.service';
+import { RedisService } from './redis/redis.service';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ErrorHandlingService } from './error-handling/error-handling.service';
     },
     ErrorHandlingService,
     Logger,
+    RedisService,
   ],
 })
 export class AppModule {}
