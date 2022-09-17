@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { DotenvParseOutput } from 'dotenv';
 import Joi from 'joi';
 import { errorMessages } from './error-messages';
 
@@ -9,8 +10,11 @@ export class PlanetNotFoundException extends Error {
 }
 
 export class EnvValidationError extends Error {
-  constructor(errors: Joi.ValidationError) {
-    super(`${errorMessages.ENV_VALIDATION} ${errors}
+  constructor(errors: Joi.ValidationError | DotenvParseOutput | undefined) {
+    super(`${
+      errors ? errorMessages.ENV_VALIDATION : errorMessages.ENV_FILE_MISSING
+    }: 
+    Error message: ${errors}
     `);
   }
 }

@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv';
 import { ValidationResult } from 'joi';
 import path from 'path';
 import { EnvValidationError } from '../common/exceptions/customErrors';
+import { isUndefined } from '../common/utils/type.guards';
 import { NODE_ENV, NODE_PORT, SWAPI_URL } from './constants.tokens';
 import { envSchema } from './env.schema';
 
@@ -17,10 +18,12 @@ export class EnvService {
     const vars = dotenv.config({
       path: path.resolve(__dirname + '../../../.env'),
     }).parsed;
-    this.env = envSchema.validate(vars);
 
-    if (this.env.error) {
-      throw new EnvValidationError(this.env.error);
+    this.env = envSchema.validate(vars);
+    const errors = this.env.error;
+
+    if (errors || isUndefined(vars)) {
+      throw new EnvValidationError(errors);
     }
 
     this.nodePort = this.env.value[NODE_PORT];
