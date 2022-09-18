@@ -28,6 +28,7 @@ services:
     image: redis:alpine
     ports:
       - 6379:6379
+    hostname: redis
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD?err}
     command: >
