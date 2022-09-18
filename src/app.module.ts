@@ -8,7 +8,7 @@ import { HttpExceptionFilter } from './common/exception-filter/http.exception.fi
 import { APP_FILTER } from '@nestjs/core';
 import { ErrorHandlingModule } from './error-handling/error-handling.module';
 import { ErrorHandlingService } from './error-handling/error-handling.service';
-import { RedisService } from './redis/redis.service';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -25,6 +25,7 @@ import { RedisService } from './redis/redis.service';
     EnvModule,
     SwapiModule,
     ErrorHandlingModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [
@@ -34,7 +35,6 @@ import { RedisService } from './redis/redis.service';
     },
     ErrorHandlingService,
     Logger,
-    RedisService,
   ],
 })
 export class AppModule {}

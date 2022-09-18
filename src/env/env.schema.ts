@@ -28,4 +28,10 @@ export const envSchema = Joi.object({
     .string()
     .valid(...Object.values(nodeEnvs))
     .required(),
+  REDIS_PORT: customJoi.number().required(),
+  REDIS_USERNAME: customJoi.string().required(),
+  REDIS_PASSWORD: customJoi.string().required(),
+  REDIS_DB: customJoi.string().required(),
+  REDIS_URL: customJoi.string().required(),
+  REDIS_HOST: customJoi.string().required(),
 });

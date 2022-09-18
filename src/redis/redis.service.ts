@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import Redis, { RedisKey } from 'ioredis';
+import { EnvService } from '../env/env.service';
 
 type RedisValue = string | number | Buffer;
 
 @Injectable()
 export class RedisService {
   private client: Redis;
-  constructor() {
-    this.client = new Redis();
+  constructor(private readonly envService: EnvService) {
+    this.client = new Redis(this.envService.redisUrl);
   }
 
   public setClient(client: Redis) {
