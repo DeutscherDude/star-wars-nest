@@ -15,8 +15,7 @@ run-prod:
 stop: 
 	@docker-compose stop
 
-restart-dev:
-	stop run-dev
+restart-dev: stop run-dev
 
 restart-prod:
 	stop run-prod
