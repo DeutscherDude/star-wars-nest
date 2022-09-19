@@ -1,4 +1,5 @@
 import {
+  CACHE_KEY_METADATA,
   CACHE_MANAGER,
   CACHE_TTL_METADATA,
   CallHandler,
@@ -48,8 +49,8 @@ export class RedisInterceptor implements NestInterceptor {
         tap(async (response) => {
           const args =
             isNull(ttl) || isUndefined(ttl)
-              ? [key as RedisKey, response as RedisValue]
-              : [key as RedisKey, response as RedisValue, { ttl }];
+              ? [key, response]
+              : [key, response, { ttl }];
 
           try {
             await this.redisService.set(...args);
@@ -61,5 +62,29 @@ export class RedisInterceptor implements NestInterceptor {
     } catch (err) {
       return next.handle();
     }
+  }
+
+  protected trackBy(context: ExecutionContext) {
+    const httpAdapter = this.httpAdapterHost.httpAdapter;
+    const isHttpApp = httpAdapter && !!httpAdapter.getRequestMethod;
+    const cacheMetadata = this.reflector.get(
+      CACHE_KEY_METADATA,
+      context.getHandler(),
+    );
+
+    if (!isHttpApp || cacheMetadata) {
+      return cacheMetadata;
+    }
+
+    const request = context.getArgByIndex(0);
+    if (!this.isRequestCacheable(context)) {
+      return undefined;
+    }
+    return httpAdapter.getRequestUrl(request);
+  }
+
+  protected isRequestCacheable(context: ExecutionContext) {
+    const req = context.switchToHttp().getRequest();
+    return req.method === 'GET';
   }
 }
