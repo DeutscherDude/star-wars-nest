@@ -25,7 +25,6 @@ import { RedisModule } from './redis/redis.module';
     EnvModule,
     SwapiModule,
     ErrorHandlingModule,
-    RedisModule,
   ],
   controllers: [AppController],
   providers: [
