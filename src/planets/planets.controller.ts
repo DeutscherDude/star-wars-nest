@@ -17,14 +17,15 @@ import { RedisInterceptor } from '../common/interceptors/redis.interceptor';
 import { generateQueryOptions } from '../common/utils/generateQueryOptions';
 import { QueryOptionsDto } from './dtos/queryOptions.dto';
 import { Planet } from './entities/planet.entity';
+import { PlanetsQueryInterceptor } from './interceptors/query-filter.interceptor';
 import { PlanetsService } from './planets.service';
 
 @Controller('planets')
-@UseInterceptors(RedisInterceptor)
 export class PlanetsController {
   constructor(private readonly planetsService: PlanetsService) {}
 
   @CacheKey('find-many')
+  @UseInterceptors(RedisInterceptor, PlanetsQueryInterceptor)
   @Get()
   async findMany(@Query() queryOptionsDto: QueryOptionsDto): Promise<Planet[]> {
     const query = generateQueryOptions(queryOptionsDto);
