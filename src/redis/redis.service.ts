@@ -26,11 +26,9 @@ export class RedisService {
     return this.client.get(key);
   }
 
-  public async set(...args: Record<any, any>[]): Promise<'OK'> {
-    args.forEach((arg) => {
-      this.client.set(arg.key, arg.value);
-      this.client.expire(arg.key, this.redisOptions.ttl);
-    });
+  public async set(key: string, args: RedisValue): Promise<'OK'> {
+    this.client.set(key, args);
+    this.client.expire(key, this.redisOptions.ttl);
     return 'OK';
   }
 }

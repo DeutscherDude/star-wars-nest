@@ -1,4 +1,5 @@
 star-wars-nest-id=$(shell docker ps -q -f name=swapi-backend-dev)
+redis=$(shell docker ps -q -f name=redis)
 
 build-dev:
 	@docker-compose --profile dev build
@@ -11,6 +12,9 @@ run-dev:
 
 run-prod:
 	@docker-compose --profile prod up -d
+
+rm-redis:
+	@docker rm -f $(redis)
 
 stop: 
 	@docker-compose stop
