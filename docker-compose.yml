@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  swapi-dev:
+    container_name: swapi-backend-dev
+    profiles:
+      - dev
+    build:
+      context: .
+      dockerfile: dockerfile
+      target: builder
+    mem_limit: 1024m
+    command: ["yarn", "start:dev"]
+    environment:
+      - NODE_PORT=${NODE_PORT?err}
+    ports:
+      - "4000:${NODE_PORT}"
+    depends_on:
+      - redis
+    volumes:
+      - .:/app
+      - ./.env:/app/.env
+      # - /src/node_modules
+
+  redis: 
+    container_name: redis
+    command: redis-server
+    profiles: 
+      - dev
+    image: redis:alpine
+    ports:
+      - '6379:6379'
+    hostname: redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
