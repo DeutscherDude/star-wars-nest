@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { CACHE_MANAGER } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { IQueryOptions } from '@planets/dtos/queryOptions.dto';
 import { SwapiService } from '@swapi/swapi.service';
 import Axios from 'axios';
 import { Observable } from 'rxjs';
@@ -22,27 +23,11 @@ export const mockPlanetFetchResult = {
   config: {},
 };
 
-export const malformedFetchRes = {
-  status: 200,
-  statusText: 'Lala',
-  headers: { something: 'application/json' },
-  config: {},
-};
-
 describe('PlanetsService', () => {
   let service: PlanetsService;
-  const dummyObservable = new Observable((sub) => {
-    sub.next(mockPlanetFetchResult);
-    sub.next(mockPlanetFetchResult);
-    setTimeout(() => {
-      sub.next(mockPlanetFetchResult);
-      sub.complete();
-    }, 500);
-  });
-  const malformedObservable = new Observable((sub) => {
-    sub.next(malformedFetchRes);
-    sub.complete();
-  });
+  let swapiService: SwapiService;
+  const findAllMock = jest.fn();
+  const findManyByParamsMock = jest.fn();
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -54,7 +39,10 @@ describe('PlanetsService', () => {
         },
         {
           provide: SwapiService,
-          useValue: {},
+          useValue: {
+            findAll: findAllMock,
+            findManyByParams: findManyByParamsMock,
+          },
         },
         EnvService,
         {
@@ -65,46 +53,38 @@ describe('PlanetsService', () => {
     }).compile();
 
     service = module.get<PlanetsService>(PlanetsService);
+    swapiService = module.get<SwapiService>(SwapiService);
   });
 
-  it('should be defined', () => {
+  it('should be defined smoke test', () => {
     expect(service).toBeDefined();
   });
 
-  describe('findAll', () => {
-    describe('given no server error', () => {
+  describe('findMany', () => {
+    describe('given no query parameter', () => {
       it('should return all planets', async () => {
+        findAllMock.mockReturnValueOnce(mockPlanetFetchResult.data.results);
         const res = await service.findMany();
         expect(res).toBeDefined();
         expect(res).toBeInstanceOf(Array);
+        expect(swapiService.findAll).toBeCalled();
       });
     });
 
-    describe('given no server response', () => {
-      it('should throw an error', async () => {
-        try {
-          await service.findMany();
-        } catch (err) {
-          expect(err).toBeDefined();
-          expect(err).toBeInstanceOf(AxiosException);
-        }
-      });
-    });
-
-    describe('given response w/o data', () => {
-      it('should throw an error', async () => {
-        try {
-          await service.findMany();
-        } catch (err) {
-          expect(err).toBeDefined();
-          expect(err).toBeInstanceOf(AxiosException);
-        }
+    describe('given a query parameter', () => {
+      it('should return a filtered array of planets', async () => {
+        const mockQuery: IQueryOptions = {
+          planet: {
+            climate: 'arid',
+          },
+          pagination: {},
+        };
+        findManyByParamsMock.mockReturnValueOnce(mockPlanetFetchResult.data);
+        const res = await service.findMany(mockQuery);
+        expect(res).toBeDefined();
+        expect(res).toBe(mockPlanetFetchResult.data);
+        expect(swapiService.findManyByParams).toBeCalledWith(mockQuery);
       });
     });
   });
-
-  it.todo('findOneById');
-  it.todo('findOneByName');
-  it.todo('findByTerrain');
-  it.todo('findByTerrain');
 });

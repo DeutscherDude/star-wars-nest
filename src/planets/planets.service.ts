@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { SwapiService } from '../swapi/swapi.service';
 import { IQueryOptions } from './dtos/queryOptions.dto';
@@ -19,22 +19,5 @@ export class PlanetsService {
 
   async findOneById(id: string): Promise<obsPlanet> {
     return this.swapiService.findOneById(id);
-  }
-
-  async findOneByName(name: string): Promise<Planet> {
-    const fetch = await this.findMany();
-    const planet = fetch.find((val) => val.name === name);
-    if (planet === undefined) throw new NotFoundException();
-    return planet;
-  }
-
-  async findByClimate(climate: string): Promise<Planet[]> {
-    const res = await this.findMany();
-    return res.filter((res) => res.climate.includes(climate));
-  }
-
-  async findByTerrain(terrain: string): Promise<Planet[]> {
-    const res = await this.findMany();
-    return res.filter((val) => val.terrain.includes(terrain));
   }
 }
