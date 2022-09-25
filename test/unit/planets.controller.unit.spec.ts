@@ -77,7 +77,7 @@ describe('PlanetsController', () => {
     });
 
     describe('given an error', () => {
-      it('given AxiosException, should throw', async () => {
+      it('given AxiosException, should throw NotFound Exception', async () => {
         findManyMock.mockImplementation(() => {
           throw new AxiosException();
         });
@@ -85,6 +85,32 @@ describe('PlanetsController', () => {
         controller.findMany(mockQuery).catch((e) => {
           expect(e).toBeInstanceOf(NotFoundException);
           expect(e.message).toBe('Not Found');
+        });
+      });
+
+      it('given other errors should throw them', async () => {
+        findManyMock.mockImplementationOnce(() => {
+          throw new Error('Not a 404 Error');
+        });
+
+        controller.findMany(mockQuery).catch((e) => {
+          expect(e).toBeInstanceOf(Error);
+          expect(e.message).toBe('Not a 404 Error');
+        });
+      });
+    });
+  });
+
+  describe('findOneById', () => {
+    describe('given an unexpected error', () => {
+      it('should throw it', async () => {
+        findOneByIdMock.mockImplementationOnce(() => {
+          throw new Error('UNEXPECTED ERROR');
+        });
+
+        controller.findOneById('1').catch((e) => {
+          expect(e).toBeInstanceOf(Error);
+          expect(e.message).toBe('UNEXPECTED ERROR');
         });
       });
     });
