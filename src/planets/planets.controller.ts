@@ -40,7 +40,7 @@ export class PlanetsController {
   @Get(':id')
   async findOneById(@Param('id') id: string): Promise<Observable<Planet>> {
     try {
-      return this.planetsService.findOneById(id);
+      return await this.planetsService.findOneById(id);
     } catch (err) {
       if (err instanceof PlanetNotFoundException) {
         throw new NotFoundException(err.message);

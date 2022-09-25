@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { SwapiService } from '../swapi/swapi.service';
 import { IQueryOptions } from './dtos/queryOptions.dto';
 import { Planet } from './entities/planet.entity';
@@ -18,6 +18,6 @@ export class PlanetsService {
   }
 
   async findOneById(id: string): Promise<obsPlanet> {
-    return this.swapiService.findOneById(id);
+    return await this.swapiService.findOneById(id);
   }
 }

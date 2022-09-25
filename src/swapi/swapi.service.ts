@@ -55,7 +55,7 @@ export class SwapiService {
   }
 
   async findOneById(id: string): Promise<obsPlanet> {
-    return this.httpService.get(`${this.envService.swapiURL}${id}/`).pipe(
+    return this.httpService.get(`${this.envService.swapiURL}/${id}/`).pipe(
       map((response) => {
         return response.data;
       }),
@@ -70,6 +70,19 @@ export class SwapiService {
   }
 
   async findManyByParams(queryOptions?: IQueryOptions): Promise<Planet[]> {
+    let limit = 6;
+    let start = 1;
+
+    if (queryOptions?.pagination.offset) {
+      start = start + queryOptions.pagination.offset;
+    }
+
+    if (queryOptions?.pagination.limit) {
+      // Ugly check below, but removes an if. If queried limit > 6, set it to 6, otherwise to the given one
+      limit =
+        queryOptions.pagination.limit <= 6 ? queryOptions.pagination.limit : 6;
+    }
+
     let planets = await this.fetchPages();
 
     planets = climateFilter(planets, queryOptions);
@@ -84,7 +97,7 @@ export class SwapiService {
     planets = terrainFilter(planets, queryOptions);
     planets = urlFilter(planets, queryOptions);
 
-    return planets;
+    return planets.slice(start * 10 - 10, limit * 10 + 10);
   }
 
   private async generatePageRequests(
