@@ -1,6 +1,5 @@
 import {
   CACHE_KEY_METADATA,
-  CACHE_MANAGER,
   CACHE_TTL_METADATA,
   CallHandler,
   ExecutionContext,
@@ -10,9 +9,7 @@ import {
   Optional,
 } from '@nestjs/common';
 import { HttpAdapterHost, Reflector } from '@nestjs/core';
-import { stringify } from 'querystring';
 import { Observable, of, tap } from 'rxjs';
-import { REDIS_CACHE } from '../../redis/redis.module';
 import { RedisService } from '../../redis/redis.service';
 import { isNull, isUndefined } from '../utils/type.guards';
 
@@ -36,13 +33,12 @@ export class RedisInterceptor implements NestInterceptor {
     const ttlValue =
       this.reflector.get(CACHE_TTL_METADATA, context.getHandler()) ?? null;
 
-    console.log('Inside the Redis interceptor');
-
     if (!key) {
       return next.handle();
     }
     try {
       const value = await this.redisService.get(key);
+
       if (!isUndefined(value) && !isNull(value)) {
         const returnValue = JSON.parse(value);
         return of(returnValue);
@@ -64,7 +60,6 @@ export class RedisInterceptor implements NestInterceptor {
         }),
       );
     } catch (err) {
-      console.log(err);
       return next.handle();
     }
   }
@@ -78,14 +73,11 @@ export class RedisInterceptor implements NestInterceptor {
     );
 
     if (!isHttpApp || cacheMetadata) {
-      console.log('Cache metadata: ' + cacheMetadata);
       return cacheMetadata;
     }
 
     const request = context.getArgByIndex(0);
-    console.log('Request context: ' + request);
     if (!this.isRequestCacheable(context)) {
-      console.log('Trackby returning undefined');
       return undefined;
     }
     return httpAdapter.getRequestUrl(request);

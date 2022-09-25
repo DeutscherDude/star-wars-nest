@@ -1,6 +1,4 @@
 import {
-  CacheInterceptor,
-  CacheKey,
   Controller,
   Get,
   NotFoundException,
@@ -9,22 +7,22 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import { RedisInterceptor } from 'src/common/interceptors/redis.interceptor';
 import {
   AxiosException,
   PlanetNotFoundException,
 } from '../common/exceptions/customErrors';
-import { RedisInterceptor } from '../common/interceptors/redis.interceptor';
 import { generateQueryOptions } from '../common/utils/generateQueryOptions';
 import { QueryOptionsDto } from './dtos/queryOptions.dto';
 import { Planet } from './entities/planet.entity';
+import { PlanetsQueryInterceptor } from './interceptors/query-filter.interceptor';
 import { PlanetsService } from './planets.service';
 
 @Controller('planets')
-@UseInterceptors(RedisInterceptor)
+@UseInterceptors(PlanetsQueryInterceptor, RedisInterceptor)
 export class PlanetsController {
   constructor(private readonly planetsService: PlanetsService) {}
 
-  @CacheKey('find-many')
   @Get()
   async findMany(@Query() queryOptionsDto: QueryOptionsDto): Promise<Planet[]> {
     const query = generateQueryOptions(queryOptionsDto);
@@ -39,7 +37,6 @@ export class PlanetsController {
     }
   }
 
-  @CacheKey('id')
   @Get(':id')
   async findOneById(@Param('id') id: string): Promise<Observable<Planet>> {
     try {
