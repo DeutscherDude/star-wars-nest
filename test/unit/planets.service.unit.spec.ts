@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { CACHE_MANAGER } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { SwapiService } from '@swapi/swapi.service';
 import Axios from 'axios';
 import { Observable } from 'rxjs';
 import { AxiosException } from '../../src/common/exceptions/customErrors';
@@ -30,7 +31,6 @@ export const malformedFetchRes = {
 
 describe('PlanetsService', () => {
   let service: PlanetsService;
-  let httpService: HttpService;
   const dummyObservable = new Observable((sub) => {
     sub.next(mockPlanetFetchResult);
     sub.next(mockPlanetFetchResult);
@@ -52,7 +52,10 @@ describe('PlanetsService', () => {
           provide: CACHE_MANAGER,
           useValue: {},
         },
-        HttpService,
+        {
+          provide: SwapiService,
+          useValue: {},
+        },
         EnvService,
         {
           provide: 'AXIOS_INSTANCE_TOKEN',
@@ -62,7 +65,6 @@ describe('PlanetsService', () => {
     }).compile();
 
     service = module.get<PlanetsService>(PlanetsService);
-    httpService = module.get<HttpService>(HttpService);
   });
 
   it('should be defined', () => {
@@ -72,7 +74,6 @@ describe('PlanetsService', () => {
   describe('findAll', () => {
     describe('given no server error', () => {
       it('should return all planets', async () => {
-        jest.spyOn(httpService, 'get').mockReturnValue(dummyObservable as any);
         const res = await service.findMany();
         expect(res).toBeDefined();
         expect(res).toBeInstanceOf(Array);
@@ -81,7 +82,6 @@ describe('PlanetsService', () => {
 
     describe('given no server response', () => {
       it('should throw an error', async () => {
-        jest.spyOn(httpService, 'get').mockReturnValueOnce(undefined as any);
         try {
           await service.findMany();
         } catch (err) {
@@ -93,10 +93,6 @@ describe('PlanetsService', () => {
 
     describe('given response w/o data', () => {
       it('should throw an error', async () => {
-        jest
-          .spyOn(httpService, 'get')
-          .mockReturnValueOnce(malformedObservable as any);
-
         try {
           await service.findMany();
         } catch (err) {
