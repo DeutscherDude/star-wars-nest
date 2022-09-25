@@ -2,7 +2,6 @@ import { EnvService } from '@env/env.service';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SwapiService } from '@swapi/swapi.service';
-import { BehaviorSubject, take } from 'rxjs';
 
 describe('SwapiService', () => {
   let service: SwapiService;
@@ -100,9 +99,10 @@ describe('SwapiService', () => {
       describe('given an existing id', () => {
         it('should return a planet', async () => {
           const res = await service.findOneById('1');
-          res.subscribe((value) => {
+          const sub = res.subscribe((value) => {
             expect(JSON.stringify(value)).toBe(JSON.stringify(firstPlanet));
           });
+          sub.unsubscribe();
         });
       });
     });

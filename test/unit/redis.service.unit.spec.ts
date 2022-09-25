@@ -14,7 +14,7 @@ describe('RediService', () => {
         {
           provide: EnvService,
           useValue: {
-            redisUrl: '',
+            redisUrl: 'redis://redis:6379',
           },
         },
       ],

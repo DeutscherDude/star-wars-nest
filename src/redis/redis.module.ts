@@ -11,7 +11,7 @@ export const REDIS_CACHE = 'REDIS_CACHE';
   exports: [RedisService],
 })
 export class RedisModule {
-  static register(options: Record<any, any>): DynamicModule {
+  static register(options?: Record<any, any>): DynamicModule {
     return {
       module: RedisModule,
       providers: [
