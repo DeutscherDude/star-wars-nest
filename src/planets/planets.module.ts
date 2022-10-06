@@ -5,8 +5,7 @@ import { HttpModule } from '@nestjs/axios';
 import { EnvModule } from 'src/env/env.module';
 import { EnvService } from 'src/env/env.service';
 import { SwapiService } from '../swapi/swapi.service';
-import { RedisModule, REDIS_CACHE } from '../redis/redis.module';
-import { RedisService } from '../redis/redis.service';
+import { RedisModule } from '../redis/redis.module';
 
 @Module({
   imports: [

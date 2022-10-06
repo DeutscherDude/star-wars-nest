@@ -63,7 +63,6 @@ export class RedisInterceptor implements NestInterceptor {
         }),
       );
     } catch (err) {
-      console.log(err);
       return next.handle();
     }
   }

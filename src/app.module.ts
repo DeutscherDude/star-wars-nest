@@ -1,14 +1,13 @@
 import { HttpModule } from '@nestjs/axios';
 import { CacheModule, Logger, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { EnvModule } from './env/env.module';
-import { PlanetsModule } from './planets/planets.module';
-import { SwapiModule } from './swapi/swapi.module';
+import { PlanetsModule } from '@planets/planets.module';
 import { HttpExceptionFilter } from './common/exception-filter/http.exception.filter';
 import { APP_FILTER } from '@nestjs/core';
 import { ErrorHandlingModule } from './error-handling/error-handling.module';
 import { ErrorHandlingService } from './error-handling/error-handling.service';
-import { RedisModule } from './redis/redis.module';
+import { SwapiModule } from '@swapi/swapi.module';
+import { EnvModule } from '@env/env.module';
 
 @Module({
   imports: [

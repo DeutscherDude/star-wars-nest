@@ -17,6 +17,12 @@
     "strictBindCallApply": false,
     "strictPropertyInitialization": false,
     "alwaysStrict": true,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@common/*": ["src/common/*"],
+      "@planets/*": ["src/planets/*"],
+      "@swapi/*": ["src/swapi/*"],
+      "@env/*": ["src/env/*"]
+    }
   }
 }
