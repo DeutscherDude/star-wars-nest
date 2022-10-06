@@ -27,8 +27,8 @@ export class RedisService {
   }
 
   public async set(key: string, args: RedisValue): Promise<'OK'> {
-    this.client.set(key, args);
-    this.client.expire(key, this.redisOptions.ttl);
+    await this.client.set(key, args);
+    await this.client.expire(key, this.redisOptions.ttl);
     return 'OK';
   }
 }

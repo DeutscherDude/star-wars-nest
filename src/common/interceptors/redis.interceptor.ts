@@ -9,7 +9,7 @@ import {
   Optional,
 } from '@nestjs/common';
 import { HttpAdapterHost, Reflector } from '@nestjs/core';
-import { Observable, of, tap } from 'rxjs';
+import { Observable, of, tap, throwError } from 'rxjs';
 import { RedisService } from '../../redis/redis.service';
 import { isNull, isUndefined } from '../utils/type.guards';
 
@@ -33,11 +33,13 @@ export class RedisInterceptor implements NestInterceptor {
     const ttlValue =
       this.reflector.get(CACHE_TTL_METADATA, context.getHandler()) ?? null;
 
-    if (!key) {
+    const normalizedKey = await this.sortQueryParams(key);
+
+    if (!normalizedKey) {
       return next.handle();
     }
     try {
-      const value = await this.redisService.get(key);
+      const value = await this.redisService.get(normalizedKey);
 
       if (!isUndefined(value) && !isNull(value)) {
         const returnValue = JSON.parse(value);
@@ -49,13 +51,14 @@ export class RedisInterceptor implements NestInterceptor {
         tap(async (response) => {
           const args =
             isNull(ttl) || isUndefined(ttl)
-              ? [key, response]
-              : [key, response, { ttl }];
+              ? [normalizedKey, response]
+              : [normalizedKey, response, { ttl }];
 
           try {
-            await this.redisService.set(key, JSON.stringify(args));
+            await this.redisService.set(normalizedKey, JSON.stringify(args));
           } catch (err) {
             console.log(err);
+            throwError(() => err);
           }
         }),
       );
@@ -86,5 +89,14 @@ export class RedisInterceptor implements NestInterceptor {
   protected isRequestCacheable(context: ExecutionContext) {
     const req = context.switchToHttp().getRequest();
     return req.method === 'GET';
+  }
+
+  private async sortQueryParams(key: string) {
+    const url = new URL(key, 'http://localhost:3000');
+    const tempArray: Array<any> = [];
+    url.searchParams.forEach((key, value) => {
+      tempArray.push(value + '=' + key);
+    });
+    return tempArray.sort().join('&');
   }
 }

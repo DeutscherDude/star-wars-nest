@@ -1,4 +1,8 @@
 import {
+<<<<<<< HEAD
+  CacheKey,
+=======
+>>>>>>> master
   Controller,
   Get,
   NotFoundException,
@@ -15,7 +19,6 @@ import {
 import { generateQueryOptions } from '../common/utils/generateQueryOptions';
 import { QueryOptionsDto } from './dtos/queryOptions.dto';
 import { Planet } from './entities/planet.entity';
-import { PlanetsQueryInterceptor } from './interceptors/query-filter.interceptor';
 import { PlanetsService } from './planets.service';
 
 @Controller('planets')
@@ -23,6 +26,7 @@ import { PlanetsService } from './planets.service';
 export class PlanetsController {
   constructor(private readonly planetsService: PlanetsService) {}
 
+  @UseInterceptors(RedisInterceptor)
   @Get()
   async findMany(@Query() queryOptionsDto: QueryOptionsDto): Promise<Planet[]> {
     const query = generateQueryOptions(queryOptionsDto);
