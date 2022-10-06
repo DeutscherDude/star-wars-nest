@@ -12,7 +12,8 @@ export class PlanetsService {
 
   async findMany(query?: IQueryOptions): Promise<Planet[]> {
     if (query === undefined) {
-      return await this.swapiService.findAll();
+      const res = await this.swapiService.findAll();
+      return res;
     }
     return await this.swapiService.findManyByParams(query);
   }

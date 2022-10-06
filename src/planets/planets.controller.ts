@@ -1,5 +1,4 @@
 import {
-  CacheInterceptor,
   CacheKey,
   Controller,
   Get,
@@ -24,8 +23,7 @@ import { PlanetsService } from './planets.service';
 export class PlanetsController {
   constructor(private readonly planetsService: PlanetsService) {}
 
-  @CacheKey('find-many')
-  @UseInterceptors(RedisInterceptor, PlanetsQueryInterceptor)
+  @UseInterceptors(RedisInterceptor)
   @Get()
   async findMany(@Query() queryOptionsDto: QueryOptionsDto): Promise<Planet[]> {
     const query = generateQueryOptions(queryOptionsDto);

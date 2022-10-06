@@ -1,4 +1,5 @@
 import { QueryOptionsDto } from '../../planets/dtos/queryOptions.dto';
+import { isObjectWithOnlyUndefined } from './type.guards';
 
 export const generateQueryOptions = (queryOptionsDto: QueryOptionsDto) => {
   const {
@@ -19,7 +20,7 @@ export const generateQueryOptions = (queryOptionsDto: QueryOptionsDto) => {
     limit,
     offset,
   } = queryOptionsDto;
-  return {
+  const query = {
     planet: {
       name: name,
       rotation_period: rotation_period,
@@ -41,4 +42,7 @@ export const generateQueryOptions = (queryOptionsDto: QueryOptionsDto) => {
       offset: offset,
     },
   };
+  if (isObjectWithOnlyUndefined(query)) {
+    return undefined;
+  }
 };
