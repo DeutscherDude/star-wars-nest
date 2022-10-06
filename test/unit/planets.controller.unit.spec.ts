@@ -5,6 +5,8 @@ import Axios from 'axios';
 import { EnvService } from '../../src/env/env.service';
 import { PlanetsController } from '../../src/planets/planets.controller';
 import { PlanetsService } from '../../src/planets/planets.service';
+import { RedisService } from '../../src/redis/redis.service';
+import { SwapiService } from '../../src/swapi/swapi.service';
 
 describe('PlanetsController', () => {
   let controller: PlanetsController;
@@ -17,8 +19,20 @@ describe('PlanetsController', () => {
         EnvService,
         HttpService,
         {
+          provide: 'REDIS_OPTIONS',
+          useValue: {},
+        },
+        {
+          provide: RedisService,
+          useValue: {},
+        },
+        {
           provide: 'AXIOS_INSTANCE_TOKEN',
           useValue: Axios.create(),
+        },
+        {
+          provide: SwapiService,
+          useValue: {},
         },
         {
           provide: 'CACHE_MANAGER',

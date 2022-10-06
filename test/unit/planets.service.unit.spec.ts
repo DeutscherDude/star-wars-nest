@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { AxiosException } from '../../src/common/exceptions/customErrors';
 import { EnvService } from '../../src/env/env.service';
 import { PlanetsService } from '../../src/planets/planets.service';
+import { SwapiService } from '../../src/swapi/swapi.service';
 import { generatePlanet } from '../utils/generate-planet';
 
 export const mockPlanetFetchResult = {
@@ -54,6 +55,12 @@ describe('PlanetsService', () => {
         },
         HttpService,
         EnvService,
+        {
+          provide: SwapiService,
+          useValue: {
+            findAll: jest.fn(),
+          },
+        },
         {
           provide: 'AXIOS_INSTANCE_TOKEN',
           useValue: Axios.create(),
@@ -106,9 +113,4 @@ describe('PlanetsService', () => {
       });
     });
   });
-
-  it.todo('findOneById');
-  it.todo('findOneByName');
-  it.todo('findByTerrain');
-  it.todo('findByTerrain');
 });
