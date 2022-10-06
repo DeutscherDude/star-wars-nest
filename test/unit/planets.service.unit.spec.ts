@@ -32,6 +32,7 @@ export const malformedFetchRes = {
 describe('PlanetsService', () => {
   let service: PlanetsService;
   let httpService: HttpService;
+  const findAllMock = jest.fn();
   const dummyObservable = new Observable((sub) => {
     sub.next(mockPlanetFetchResult);
     sub.next(mockPlanetFetchResult);
@@ -58,7 +59,7 @@ describe('PlanetsService', () => {
         {
           provide: SwapiService,
           useValue: {
-            findAll: jest.fn(),
+            findAll: findAllMock,
           },
         },
         {
@@ -80,6 +81,9 @@ describe('PlanetsService', () => {
     describe('given no server error', () => {
       it('should return all planets', async () => {
         jest.spyOn(httpService, 'get').mockReturnValue(dummyObservable as any);
+
+        findAllMock.mockResolvedValueOnce(mockPlanetFetchResult.data.results);
+
         const res = await service.findMany();
         expect(res).toBeDefined();
         expect(res).toBeInstanceOf(Array);
