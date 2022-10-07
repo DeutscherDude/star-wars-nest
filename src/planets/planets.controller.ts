@@ -17,8 +17,8 @@ import { QueryOptionsDto } from './dtos/queryOptions.dto';
 import { Planet } from './entities/planet.entity';
 import { PlanetsService } from './planets.service';
 
-@Controller('planets')
 @UseInterceptors(RedisInterceptor)
+@Controller('planets')
 export class PlanetsController {
   constructor(private readonly planetsService: PlanetsService) {}
 

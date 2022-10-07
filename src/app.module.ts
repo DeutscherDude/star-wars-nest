@@ -18,9 +18,6 @@ import { EnvModule } from '@env/env.module';
         maxRedirects: 5,
       }),
     }),
-    CacheModule.registerAsync({
-      useFactory: () => ({ ttl: 36000, max: 20 }),
-    }),
     EnvModule,
     SwapiModule,
     ErrorHandlingModule,
