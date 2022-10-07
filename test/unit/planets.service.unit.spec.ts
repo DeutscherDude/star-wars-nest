@@ -90,6 +90,12 @@ describe('PlanetsService', () => {
       });
     });
 
+    describe('given query params', () => {
+      it('should call findManyByParams', async () => {
+        await service.findMany();
+      });
+    });
+
     describe('given no server response', () => {
       it('should throw an error', async () => {
         jest.spyOn(httpService, 'get').mockReturnValueOnce(undefined as any);

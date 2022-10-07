@@ -1,5 +1,5 @@
-import { IQueryOptions } from '../planets/dtos/queryOptions.dto';
 import { Planet } from '../planets/entities/planet.entity';
+import { IQueryOptions } from '../planets/interfaces/query-options.interface';
 
 export const climateFilter = (
   planets: Planet[],
