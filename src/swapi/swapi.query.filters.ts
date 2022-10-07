@@ -26,14 +26,13 @@ export const filterAll = async (
   if (isUndefined(queryOptions)) return planets;
 
   for (const option of queryOptionsArray) {
-    if (!queryOptions?.planet[option as keyof Planet]) {
-    } else {
-      planets = planets.filter((planet) =>
-        planet[option as keyof Planet].includes(
-          queryOptions?.planet[option as keyof Planet] as string,
-        ),
-      );
-    }
+    if (!queryOptions?.planet[option as keyof Planet]) continue;
+
+    planets = planets.filter((planet) =>
+      planet[option as keyof Planet].includes(
+        queryOptions?.planet[option as keyof Planet] as string,
+      ),
+    );
   }
   return planets;
 };
