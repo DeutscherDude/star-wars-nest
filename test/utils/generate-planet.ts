@@ -26,7 +26,7 @@ export const generatePlanet = (): Planet => {
  */
 export const generateMultiplePlanets = (amount = 10): Planet[] => {
   const planets: Planet[] = [];
-  for (amount; amount > 0; amount - 1) {
+  for (amount; amount > 0; amount--) {
     planets.push(generatePlanet());
   }
   return planets;

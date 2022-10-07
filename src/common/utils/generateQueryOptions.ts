@@ -1,4 +1,4 @@
-import { QueryOptionsDto } from '../../planets/dtos/queryOptions.dto';
+import { QueryOptionsDto } from '../../planets/dtos/query-options.dto';
 import { isObjectWithOnlyUndefined } from './type.guards';
 
 export const generateQueryOptions = (queryOptionsDto: QueryOptionsDto) => {

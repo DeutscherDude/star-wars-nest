@@ -8,8 +8,8 @@ import {
 } from '../common/exceptions/customErrors';
 import { EnvService } from '../env/env.service';
 import { requestConfig } from '../planets/config/axiosRequestConfig';
-import { IQueryOptions } from '../planets/dtos/queryOptions.dto';
 import { Planet } from '../planets/entities/planet.entity';
+import { IQueryOptions } from '../planets/interfaces/query-options.interface';
 import {
   climateFilter,
   createdFilter,
