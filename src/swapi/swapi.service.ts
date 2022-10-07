@@ -59,7 +59,6 @@ export class SwapiService {
 
   async findManyByParams(queryOptions?: IQueryOptions): Promise<Planet[]> {
     let planets = await this.fetchPages();
-
     planets = await filterAll(planets, queryOptions);
 
     return planets;
@@ -76,7 +75,9 @@ export class SwapiService {
       requests.push(
         firstValueFrom<Planet[]>(
           this.httpService.get(url + `?page=${start}`, requestConfig).pipe(
-            map((data) => data.data.results),
+            map((data) => {
+              return data.data.results;
+            }),
             catchError((err) => {
               throw new AxiosTimeoutException(err.message);
             }),
