@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { SwapiService } from '../swapi/swapi.service';
 import { Planet } from './entities/planet.entity';
