@@ -11,10 +11,9 @@ import {
 import { HttpAdapterHost, Reflector } from '@nestjs/core';
 import { Observable, of, tap, throwError } from 'rxjs';
 import { RedisService } from '../../redis/redis.service';
-import { isNull, isUndefined } from '../utils/type.guards';
+import { isEmptyObject, isNull, isUndefined } from '../utils/type.guards';
 
 const HTTP_ADAPTER_HOST = 'HttpAdapterHost';
-
 @Injectable()
 export class RedisInterceptor implements NestInterceptor {
   @Optional()
@@ -24,7 +23,6 @@ export class RedisInterceptor implements NestInterceptor {
     private readonly redisService: RedisService,
     @Inject(Reflector) protected readonly reflector: any,
   ) {}
-
   async intercept(
     context: ExecutionContext,
     next: CallHandler,
@@ -45,7 +43,6 @@ export class RedisInterceptor implements NestInterceptor {
         const returnValue = JSON.parse(value);
         return of(returnValue);
       }
-
       const ttl = ttlValue;
       return next.handle().pipe(
         tap(async (response) => {
@@ -63,10 +60,10 @@ export class RedisInterceptor implements NestInterceptor {
         }),
       );
     } catch (err) {
+      console.log(err);
       return next.handle();
     }
   }
-
   protected trackBy(context: ExecutionContext) {
     const httpAdapter = this.httpAdapterHost.httpAdapter;
     const isHttpApp = httpAdapter && !!httpAdapter.getRequestMethod;
@@ -74,18 +71,15 @@ export class RedisInterceptor implements NestInterceptor {
       CACHE_KEY_METADATA,
       context.getHandler(),
     );
-
     if (!isHttpApp || cacheMetadata) {
       return cacheMetadata;
     }
-
     const request = context.getArgByIndex(0);
     if (!this.isRequestCacheable(context)) {
       return undefined;
     }
     return httpAdapter.getRequestUrl(request);
   }
-
   protected isRequestCacheable(context: ExecutionContext) {
     const req = context.switchToHttp().getRequest();
     return req.method === 'GET';
@@ -93,6 +87,10 @@ export class RedisInterceptor implements NestInterceptor {
 
   private async sortQueryParams(key: string) {
     const url = new URL(key, 'http://localhost:3000');
+    if (isEmptyObject(url.searchParams)) {
+      return key;
+    }
+
     const tempArray: Array<any> = [];
     url.searchParams.forEach((key, value) => {
       tempArray.push(value + '=' + key);

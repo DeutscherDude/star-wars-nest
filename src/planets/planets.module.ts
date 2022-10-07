@@ -11,7 +11,7 @@ import { RedisModule } from '../redis/redis.module';
   imports: [
     HttpModule,
     EnvModule,
-    RedisModule.register({ ttl: 36000, max: 20 }),
+    RedisModule.register({ ttl: 3600, max: 20 }),
   ],
   controllers: [PlanetsController],
   providers: [PlanetsService, EnvService, SwapiService],

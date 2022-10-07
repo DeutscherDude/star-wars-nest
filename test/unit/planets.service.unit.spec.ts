@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { AxiosException } from '../../src/common/exceptions/customErrors';
 import { EnvService } from '../../src/env/env.service';
 import { PlanetsService } from '../../src/planets/planets.service';
+import { SwapiService } from '../../src/swapi/swapi.service';
 import { generatePlanet } from '../utils/generate-planet';
 
 export const mockPlanetFetchResult = {
@@ -31,6 +32,7 @@ export const malformedFetchRes = {
 describe('PlanetsService', () => {
   let service: PlanetsService;
   let httpService: HttpService;
+  const findAllMock = jest.fn();
   const dummyObservable = new Observable((sub) => {
     sub.next(mockPlanetFetchResult);
     sub.next(mockPlanetFetchResult);
@@ -55,6 +57,12 @@ describe('PlanetsService', () => {
         HttpService,
         EnvService,
         {
+          provide: SwapiService,
+          useValue: {
+            findAll: findAllMock,
+          },
+        },
+        {
           provide: 'AXIOS_INSTANCE_TOKEN',
           useValue: Axios.create(),
         },
@@ -73,6 +81,9 @@ describe('PlanetsService', () => {
     describe('given no server error', () => {
       it('should return all planets', async () => {
         jest.spyOn(httpService, 'get').mockReturnValue(dummyObservable as any);
+
+        findAllMock.mockResolvedValueOnce(mockPlanetFetchResult.data.results);
+
         const res = await service.findMany();
         expect(res).toBeDefined();
         expect(res).toBeInstanceOf(Array);
@@ -106,9 +117,4 @@ describe('PlanetsService', () => {
       });
     });
   });
-
-  it.todo('findOneById');
-  it.todo('findOneByName');
-  it.todo('findByTerrain');
-  it.todo('findByTerrain');
 });
