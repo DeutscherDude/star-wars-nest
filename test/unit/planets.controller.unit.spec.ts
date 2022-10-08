@@ -1,4 +1,7 @@
-import { AxiosException } from '@common/exceptions/customErrors';
+import {
+  AxiosException,
+  PlanetNotFoundException,
+} from '@common/exceptions/customErrors';
 import { generateQueryOptions } from '@common/utils/generateQueryOptions';
 import { HttpService } from '@nestjs/axios';
 import { CacheModule, NotFoundException } from '@nestjs/common';
@@ -58,6 +61,10 @@ describe('PlanetsController', () => {
     expect(controller).toBeDefined();
   });
 
+  afterEach(async () => {
+    jest.clearAllMocks();
+  });
+
   describe('findMany', () => {
     describe('given a query string', () => {
       it('should call planetsService.finaMany with the query', async () => {
@@ -82,6 +89,9 @@ describe('PlanetsController', () => {
         expect(async () => {
           await controller.findMany({} as any);
         }).rejects.toThrowError(new NotFoundException('Test'));
+        expect(findManyMock).toHaveBeenCalledWith(
+          generateQueryOptions({} as any),
+        );
       });
     });
   });
@@ -90,6 +100,28 @@ describe('PlanetsController', () => {
     describe('given no errors', () => {
       it('should call findOneById', async () => {
         await controller.findOneById('1');
+        expect(findOneByIdMock).toHaveBeenCalledWith('1');
+      });
+    });
+
+    describe('given an unexpected error', () => {
+      it('should throw it', async () => {
+        findOneByIdMock.mockRejectedValueOnce(new Error('test'));
+        expect(async () => {
+          await controller.findOneById('1');
+        }).rejects.toThrow('test');
+        expect(findOneByIdMock).toHaveBeenCalledWith('1');
+      });
+    });
+
+    describe('given PlanetNotFoundException', () => {
+      it('should throw NotFoundException', () => {
+        findOneByIdMock.mockRejectedValueOnce(
+          new PlanetNotFoundException('test'),
+        );
+        expect(async () => {
+          await controller.findOneById('1');
+        }).rejects.toThrowError(new NotFoundException('test'));
         expect(findOneByIdMock).toHaveBeenCalledWith('1');
       });
     });
