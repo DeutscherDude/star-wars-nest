@@ -13,7 +13,7 @@ import {
   PlanetNotFoundException,
 } from '../common/exceptions/customErrors';
 import { generateQueryOptions } from '../common/utils/generateQueryOptions';
-import { QueryOptionsDto } from './dtos/queryOptions.dto';
+import { QueryOptionsDto } from './dtos/query-options.dto';
 import { Planet } from './entities/planet.entity';
 import { PlanetsService } from './planets.service';
 

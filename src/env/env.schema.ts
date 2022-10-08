@@ -34,4 +34,5 @@ export const envSchema = Joi.object({
   REDIS_DB: customJoi.string().required(),
   REDIS_URL: customJoi.string().required(),
   REDIS_HOST: customJoi.string().required(),
+  REDIS_TESTING_URL: customJoi.string(),
 });

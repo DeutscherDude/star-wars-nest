@@ -33,6 +33,7 @@ describe('PlanetsService', () => {
   let service: PlanetsService;
   let httpService: HttpService;
   const findAllMock = jest.fn();
+  const findManyByParamsMock = jest.fn();
   const dummyObservable = new Observable((sub) => {
     sub.next(mockPlanetFetchResult);
     sub.next(mockPlanetFetchResult);
@@ -60,6 +61,7 @@ describe('PlanetsService', () => {
           provide: SwapiService,
           useValue: {
             findAll: findAllMock,
+            findManyByParams: findManyByParamsMock,
           },
         },
         {
@@ -87,6 +89,13 @@ describe('PlanetsService', () => {
         const res = await service.findMany();
         expect(res).toBeDefined();
         expect(res).toBeInstanceOf(Array);
+      });
+    });
+
+    describe('given query params', () => {
+      it('should call findManyByParams', async () => {
+        await service.findMany('test' as any);
+        expect(findManyByParamsMock).toHaveBeenCalledWith('test');
       });
     });
 

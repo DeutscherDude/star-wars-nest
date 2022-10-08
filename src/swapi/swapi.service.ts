@@ -8,21 +8,9 @@ import {
 } from '../common/exceptions/customErrors';
 import { EnvService } from '../env/env.service';
 import { requestConfig } from '../planets/config/axiosRequestConfig';
-import { IQueryOptions } from '../planets/dtos/queryOptions.dto';
 import { Planet } from '../planets/entities/planet.entity';
-import {
-  climateFilter,
-  createdFilter,
-  diameterFilter,
-  editedFilter,
-  filmsFilter,
-  gravityFilter,
-  populationFilter,
-  residentsFilter,
-  surfaceWaterFilter,
-  terrainFilter,
-  urlFilter,
-} from './swapi.query.filters';
+import { IQueryOptions } from '../planets/interfaces/query-options.interface';
+import { filterAll } from './swapi.query.filters';
 
 type planetArrPromise = Promise<Planet[]>;
 type obsPlanet = Observable<Planet>;
@@ -71,18 +59,7 @@ export class SwapiService {
 
   async findManyByParams(queryOptions?: IQueryOptions): Promise<Planet[]> {
     let planets = await this.fetchPages();
-
-    planets = climateFilter(planets, queryOptions);
-    planets = createdFilter(planets, queryOptions);
-    planets = diameterFilter(planets, queryOptions);
-    planets = editedFilter(planets, queryOptions);
-    planets = filmsFilter(planets, queryOptions);
-    planets = gravityFilter(planets, queryOptions);
-    planets = populationFilter(planets, queryOptions);
-    planets = residentsFilter(planets, queryOptions);
-    planets = surfaceWaterFilter(planets, queryOptions);
-    planets = terrainFilter(planets, queryOptions);
-    planets = urlFilter(planets, queryOptions);
+    planets = await filterAll(planets, queryOptions);
 
     return planets;
   }
@@ -98,7 +75,9 @@ export class SwapiService {
       requests.push(
         firstValueFrom<Planet[]>(
           this.httpService.get(url + `?page=${start}`, requestConfig).pipe(
-            map((data) => data.data.results),
+            map((data) => {
+              return data.data.results;
+            }),
             catchError((err) => {
               throw new AxiosTimeoutException(err.message);
             }),

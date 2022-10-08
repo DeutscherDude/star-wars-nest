@@ -1,23 +1,46 @@
+import { EnvService } from 'src/env/env.service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EnvService } from '../../src/env/env.service';
-import { RedisService } from '../../src/redis/redis.service';
+import { RedisService } from 'src/redis/redis.service';
 
 describe('RedisService', () => {
   let service: RedisService;
-
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RedisService,
-        { provide: EnvService, useValue: {} },
-        { provide: 'REDIS_OPTIONS', useValue: {} },
+        {
+          provide: EnvService,
+          useValue: {
+            redisUrl: process.env.REDIS_TESTING_URL,
+          },
+        },
+        { provide: 'REDIS_OPTIONS', useValue: { ttl: 15 } },
       ],
     }).compile();
 
     service = module.get<RedisService>(RedisService);
   });
 
-  it('should be defined', () => {
+  afterAll(async () => {
+    // Workaround :)
+    const serviceSpy = service as any;
+    await serviceSpy.client.quit();
+  });
+
+  it('should be defined some test', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('get', () => {
+    it('should set a redis key', async () => {
+      const response = await service.set('lala', 'test');
+      const val = await service.get('lala');
+      expect(val).toBe('test');
+      expect(response).toBe('OK');
+    });
+    it('should return null if there is no such key', async () => {
+      const response = await service.get('nopers');
+      expect(response).toBe(null);
+    });
   });
 });

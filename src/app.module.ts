@@ -1,5 +1,5 @@
 import { HttpModule } from '@nestjs/axios';
-import { CacheModule, Logger, Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { PlanetsModule } from '@planets/planets.module';
 import { HttpExceptionFilter } from './common/exception-filter/http.exception.filter';

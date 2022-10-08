@@ -20,13 +20,24 @@ services:
     volumes:
       - .:/app
       - ./.env:/app/.env
-      # - /src/node_modules
 
   redis: 
     container_name: redis
     command: redis-server
     profiles: 
       - dev
+    image: redis:alpine
+    ports:
+      - '6379:6379'
+    hostname: redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+
+  redis-testing:
+    container_name: redis-test
+    command: redis-server
+    profiles:
+      - test
     image: redis:alpine
     ports:
       - '6379:6379'
