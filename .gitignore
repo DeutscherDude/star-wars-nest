@@ -4,6 +4,7 @@
 
 # environmental variables
 *.env
+!sample.env
 
 # Tsc build
 *.tsbuildinfo
