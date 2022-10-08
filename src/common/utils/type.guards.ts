@@ -13,7 +13,3 @@ export const isArray = (value: unknown): value is Array<any> => {
 export const isEmptyObject = (value: Record<string, any>): boolean => {
   return Object.keys(value).length === 0;
 };
-
-export function isObjectWithOnlyUndefined<T>(val: T | undefined): val is T {
-  return val !== undefined;
-}

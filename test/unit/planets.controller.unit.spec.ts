@@ -1,5 +1,7 @@
+import { AxiosException } from '@common/exceptions/customErrors';
+import { generateQueryOptions } from '@common/utils/generateQueryOptions';
 import { HttpService } from '@nestjs/axios';
-import { CacheModule } from '@nestjs/common';
+import { CacheModule, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import Axios from 'axios';
 import { EnvService } from '../../src/env/env.service';
@@ -10,14 +12,22 @@ import { SwapiService } from '../../src/swapi/swapi.service';
 
 describe('PlanetsController', () => {
   let controller: PlanetsController;
+  const findManyMock = jest.fn();
+  const findOneByIdMock = jest.fn();
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PlanetsController],
       providers: [
-        PlanetsService,
         EnvService,
         HttpService,
+        {
+          provide: PlanetsService,
+          useValue: {
+            findMany: findManyMock,
+            findOneById: findOneByIdMock,
+          },
+        },
         {
           provide: 'REDIS_OPTIONS',
           useValue: {},
@@ -46,5 +56,42 @@ describe('PlanetsController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  describe('findMany', () => {
+    describe('given a query string', () => {
+      it('should call planetsService.finaMany with the query', async () => {
+        const dummyQuery = generateQueryOptions({ test: 'yes' } as any);
+        await controller.findMany(dummyQuery as any);
+        expect(findManyMock).toHaveBeenCalledWith(dummyQuery);
+      });
+    });
+
+    describe('given an unexpected error', () => {
+      it('should throw it', async () => {
+        findManyMock.mockRejectedValueOnce(new Error('test'));
+        expect(async () => {
+          await controller.findMany({} as any);
+        }).rejects.toThrow('test');
+      });
+    });
+
+    describe('given an axiosException', () => {
+      it('should throw NotFoundException', async () => {
+        findManyMock.mockRejectedValueOnce(new AxiosException('Test'));
+        expect(async () => {
+          await controller.findMany({} as any);
+        }).rejects.toThrowError(new NotFoundException('Test'));
+      });
+    });
+  });
+
+  describe('findOneById', () => {
+    describe('given no errors', () => {
+      it('should call findOneById', async () => {
+        await controller.findOneById('1');
+        expect(findOneByIdMock).toHaveBeenCalledWith('1');
+      });
+    });
   });
 });

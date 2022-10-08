@@ -1,6 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { of } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { EnvService } from 'src/env/env.service';
 import { SwapiService } from '../../src/swapi/swapi.service';
 import { generateMultiplePlanets } from '../utils/generate-planet';
@@ -92,17 +92,23 @@ describe('SwapiService', () => {
   });
 
   describe('generatePageRequests', () => {
-    it('should return an array of Promises: httpService requests', async () => {
-      const serviceSpy = service as any;
+    describe('given no errors', () => {
+      it('should return an array of Promises: httpService requests', async () => {
+        const serviceSpy = service as any;
 
-      jest.clearAllMocks();
+        jest
+          .spyOn(httpService, 'get')
+          .mockReturnValueOnce(mockObservable as any);
 
-      jest.spyOn(httpService, 'get').mockReturnValueOnce(mockObservable as any);
-
-      const res = await serviceSpy.generatePageRequests('test@test.com', 1, 1);
-      await Promise.all(res).then((res) => {
-        expect(res).toBeInstanceOf(Array);
-        expect(res).toMatchObject([mockPlanets]);
+        const res = await serviceSpy.generatePageRequests(
+          'test@test.com',
+          1,
+          1,
+        );
+        await Promise.all(res).then((res) => {
+          expect(res).toBeInstanceOf(Array);
+          expect(res).toMatchObject([mockPlanets]);
+        });
       });
     });
   });
