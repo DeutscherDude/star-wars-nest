@@ -1,3 +1,4 @@
+import { tokens } from '@common/tokens';
 import { Inject, Injectable } from '@nestjs/common';
 import Redis, { RedisKey } from 'ioredis';
 import { EnvService } from '../env/env.service';
@@ -9,7 +10,7 @@ export class RedisService {
   private client: Redis;
   constructor(
     private readonly envService: EnvService,
-    @Inject('REDIS_OPTIONS') private readonly redisOptions: any,
+    @Inject(tokens.REDIS_OPTIONS) private readonly redisOptions: any,
   ) {
     this.client = new Redis(this.envService.redisUrl);
   }

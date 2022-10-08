@@ -1,3 +1,4 @@
+import { tokens } from '@common/tokens';
 import { DynamicModule, Module } from '@nestjs/common';
 import { EnvModule } from '../env/env.module';
 import { EnvService } from '../env/env.service';
@@ -16,7 +17,7 @@ export class RedisModule {
       module: RedisModule,
       providers: [
         {
-          provide: 'REDIS_OPTIONS',
+          provide: tokens.REDIS_OPTIONS,
           useValue: options,
         },
         RedisService,

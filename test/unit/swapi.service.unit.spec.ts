@@ -1,6 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { map, Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 import { EnvService } from 'src/env/env.service';
 import { SwapiService } from '../../src/swapi/swapi.service';
 import { generateMultiplePlanets } from '../utils/generate-planet';
