@@ -1,8 +1,8 @@
 # Setting up the project :)
 
-## Requirements to run it locally
+## Requirements to run it locally :rocket:
 
-1. Node 16 LTS or higher
+1. Node.js 16 LTS or higher
 2. Docker installed on your machine
 3. Stable internet connection
 
@@ -19,7 +19,7 @@ Afterwards, please rename the `sample.env` file to `.env` and populate it accord
 ## Running docker containers
 
 For convenience, this repository contains a Makefile, that pre-defines some useful commands.
-After you have cloned the code, you should use the following commands to start the api:
+After you have cloned the code, you should use the below commands to start the api. Please note, that the first time around it may take a while, as docker needs to download images from docker-hub :heavy_exclamation_mark:
 
 - make build-dev
 - make run-dev
@@ -45,3 +45,8 @@ Installation packages vary between Intel and Apple chips: [link](https://docs.do
 ### Windows
 
 Installation tutorial: [link](https://docs.docker.com/desktop/install/windows-install/)
+
+## Installing Node.js
+
+Visit official Node.js website and download the LTS or latest version for your system.
+https://nodejs.org/en/
