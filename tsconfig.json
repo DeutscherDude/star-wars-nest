@@ -22,7 +22,8 @@
       "@common/*": ["src/common/*"],
       "@planets/*": ["src/planets/*"],
       "@swapi/*": ["src/swapi/*"],
-      "@env/*": ["src/env/*"]
+      "@env/*": ["src/env/*"],
+      "@redis/*": ["src/redis/*"]
     }
   }
 }
