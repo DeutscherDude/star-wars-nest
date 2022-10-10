@@ -5,12 +5,17 @@ import { EnvService } from '../env/env.service';
 
 type RedisValue = string | number | Buffer;
 
+export interface RedisOptions {
+  ttl: number;
+  max: number;
+}
+
 @Injectable()
 export class RedisService {
   private client: Redis;
   constructor(
     private readonly envService: EnvService,
-    @Inject(tokens.REDIS_OPTIONS) private readonly redisOptions: any,
+    @Inject(tokens.REDIS_OPTIONS) private readonly redisOptions: RedisOptions,
   ) {
     this.client = new Redis(this.envService.redisUrl);
   }

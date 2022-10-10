@@ -4,11 +4,11 @@ import { Injectable, Logger } from '@nestjs/common';
 export class ErrorHandlingService {
   constructor(private readonly loggerService: Logger) {
     process.on('uncaughtException', async (err: Error) => {
-      await this.loggerService.error(err);
+      this.loggerService.error(err);
     });
 
     process.on('unhandledRejection', async (err: Error) => {
-      await this.loggerService.error(err);
+      this.loggerService.error(err);
     });
 
     process.on('rejectionHandled', async (err: Error) => {
@@ -16,11 +16,12 @@ export class ErrorHandlingService {
     });
 
     process.on('disconnect', async (err: Error) => {
-      await this.loggerService.error(err);
+      this.loggerService.error(err);
     });
   }
 
-  public async errorHandler(error: Error, errorPaylod: any) {
+  // eslint-disable-next-line
+  public async errorHandler(error: Error, errorPaylod: any): Promise<void> {
     this.loggerService.error(
       // Just a joke, wouldn't leave it in a real-life project ;)
       error.message + '/n Something is not yes',
