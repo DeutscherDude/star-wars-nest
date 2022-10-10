@@ -1,6 +1,31 @@
 import { QueryOptionsDto } from '../../planets/dtos/query-options.dto';
 
-export const generateQueryOptions = (queryOptionsDto: QueryOptionsDto) => {
+interface IQueryOptions {
+  planet: {
+    name: string | undefined;
+    rotation_period: string | undefined;
+    orbital_period: string | undefined;
+    diameter: string | undefined;
+    climate: string | undefined;
+    gravity: string | undefined;
+    terrain: string | undefined;
+    surface_water: string | undefined;
+    population: string | undefined;
+    residents: string[] | undefined;
+    films: string[] | undefined;
+    created: string | undefined;
+    edited: string | undefined;
+    url: string | undefined;
+  };
+  pagination: {
+    limit: number;
+    offset: number;
+  };
+}
+
+export const generateQueryOptions = (
+  queryOptionsDto: QueryOptionsDto,
+): IQueryOptions => {
   const {
     name,
     rotation_period,
