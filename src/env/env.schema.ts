@@ -15,7 +15,7 @@ const customJoi = Joi.defaults((schema) => {
   }
 });
 
-export const envSchema = Joi.object({
+export const envSchema = Joi.object().keys({
   NODE_PORT: customJoi.number().required(),
   SWAPI_URL: customJoi
     .string()
