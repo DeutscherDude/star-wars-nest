@@ -4,7 +4,10 @@
       "files": ["test/**"],
       "plugins": ["jest"],
       "extends": ["plugin:jest/recommended"],
-      "rules": { "jest/prefer-expect-assertions": "off" }
+      "rules": {
+        "jest/prefer-expect-assertions": "off",
+        "@typescript-eslint/explicit-function-return-type": "off"
+      }
     }
   ],
   "rules": {

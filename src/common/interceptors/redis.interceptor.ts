@@ -5,6 +5,7 @@ import {
   ExecutionContext,
   Inject,
   Injectable,
+  Logger,
   NestInterceptor,
   Optional,
 } from '@nestjs/common';
@@ -21,21 +22,23 @@ export class RedisInterceptor implements NestInterceptor {
   protected readonly httpAdapterHost: HttpAdapterHost;
   constructor(
     private readonly redisService: RedisService,
-    @Inject(Reflector) protected readonly reflector: any,
+    private readonly loggerService: Logger,
+    @Inject(Reflector) protected readonly reflector: Reflector,
   ) {}
   async intercept(
     context: ExecutionContext,
     next: CallHandler,
+    // eslint-disable-next-line
   ): Promise<Observable<any>> {
     const key = this.trackBy(context);
     const ttlValue =
       this.reflector.get(CACHE_TTL_METADATA, context.getHandler()) ?? null;
 
-    const normalizedKey = await this.sortQueryParams(key);
-
-    if (!normalizedKey) {
+    if (isUndefined(key)) {
       return next.handle();
     }
+    const normalizedKey = await this.sortQueryParams(key);
+
     try {
       const value = await this.redisService.get(normalizedKey);
 
@@ -54,17 +57,17 @@ export class RedisInterceptor implements NestInterceptor {
           try {
             await this.redisService.set(normalizedKey, JSON.stringify(args));
           } catch (err) {
-            console.log(err);
+            this.loggerService.error(err);
             throwError(() => err);
           }
         }),
       );
     } catch (err) {
-      console.log(err);
+      this.loggerService.error(err);
       return next.handle();
     }
   }
-  protected trackBy(context: ExecutionContext) {
+  protected trackBy(context: ExecutionContext): string | undefined {
     const httpAdapter = this.httpAdapterHost.httpAdapter;
     const isHttpApp = httpAdapter && !!httpAdapter.getRequestMethod;
     const cacheMetadata = this.reflector.get(
@@ -80,17 +83,17 @@ export class RedisInterceptor implements NestInterceptor {
     }
     return httpAdapter.getRequestUrl(request);
   }
-  protected isRequestCacheable(context: ExecutionContext) {
+  protected isRequestCacheable(context: ExecutionContext): boolean {
     const req = context.switchToHttp().getRequest();
     return req.method === 'GET';
   }
 
-  private async sortQueryParams(key: string) {
+  private async sortQueryParams(key: string): Promise<string> {
     const url = new URL(key, 'http://localhost:3000');
     if (isEmptyObject(url.searchParams)) {
       return key;
     }
-
+    // eslint-disable-next-line
     const tempArray: Array<any> = [];
     url.searchParams.forEach((key, value) => {
       tempArray.push(value + '=' + key);

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { PlanetsService } from './planets.service';
 import { PlanetsController } from './planets.controller';
 import { HttpModule } from '@nestjs/axios';
@@ -14,6 +14,6 @@ import { RedisModule } from '../redis/redis.module';
     RedisModule.register({ ttl: 3600, max: 20 }),
   ],
   controllers: [PlanetsController],
-  providers: [PlanetsService, EnvService, SwapiService],
+  providers: [PlanetsService, EnvService, SwapiService, Logger],
 })
 export class PlanetsModule {}
