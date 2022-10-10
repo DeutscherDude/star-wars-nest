@@ -16,6 +16,12 @@ run-prod:
 rm-redis:
 	@docker rm -f $(redis)
 
+tests:
+	@yarn test:unit
+
+tests-coverage:
+	@yarn test:unit --coverage
+
 stop: 
 	@docker-compose stop
 

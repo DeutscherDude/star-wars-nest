@@ -10,21 +10,21 @@ services:
       dockerfile: dockerfile
       target: builder
     mem_limit: 1024m
-    command: ["yarn", "start:dev"]
+    command: ['yarn', 'start:dev']
     environment:
       - NODE_PORT=${NODE_PORT?err}
     ports:
-      - "4000:${NODE_PORT}"
+      - '4000:${NODE_PORT}'
     depends_on:
       - redis
     volumes:
       - .:/app
       - ./.env:/app/.env
 
-  redis: 
+  redis:
     container_name: redis
     command: redis-server
-    profiles: 
+    profiles:
       - dev
     image: redis:alpine
     ports:

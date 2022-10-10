@@ -4,7 +4,7 @@ import {
 } from '@common/exceptions/customErrors';
 import { generateQueryOptions } from '@common/utils/generateQueryOptions';
 import { HttpService } from '@nestjs/axios';
-import { CacheModule, NotFoundException } from '@nestjs/common';
+import { CacheModule, Logger, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import Axios from 'axios';
 import { EnvService } from '../../src/env/env.service';
@@ -24,6 +24,7 @@ describe('PlanetsController', () => {
       providers: [
         EnvService,
         HttpService,
+        Logger,
         {
           provide: PlanetsService,
           useValue: {

@@ -13,5 +13,5 @@
     "@planets/*(/.*)$": ["<rootDir>/src/planets/$1"],
     "@swapi/*/(.*)$": ["<rootDir>/src/swapi/$1"],
     "@env/*/(.*)$": "<rootDir>/src/config/$1"
-    }
+  }
 }

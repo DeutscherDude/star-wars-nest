@@ -50,3 +50,12 @@ Installation tutorial: [link](https://docs.docker.com/desktop/install/windows-in
 
 Visit official Node.js website and download the LTS or latest version for your system.
 https://nodejs.org/en/
+
+
+### Extras:
+
+Running tests, both with can be performed via the Makefile :smiley:
+
+- make tests - for tests without the coverage report
+
+- make tests-coverage - for tests with the coverage report
